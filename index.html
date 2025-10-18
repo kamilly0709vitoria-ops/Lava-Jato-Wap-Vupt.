@@ -12,9 +12,9 @@
     --bg: #f7f9fc;
     --panel: #ffffff;
     --muted: #6c757d;
-    --accent: #b71c1c;
-    --dark: #212529;
-    --line: #e3e8f0;
+    --accent: #b71c1c; /* VERMELHO: O que você usa no seu tema */
+    --dark: #212529; /* PRETO/CINZA ESCURO: Cor principal */
+    --line: #e3e8f0; /* CINZA CLARO: Linhas e bordas */
     --shadow: 0 4px 12px rgba(0,0,0,0.05);
     --success: #28a745;
     --danger: #dc3545;
@@ -324,7 +324,7 @@
       <h4 style="margin-top:10px">Resumo Financeiro - Hoje (<span id="adminTodayDate"></span>)</h4>
       <div class="daily-summary">
           <div class="daily-stat">
-              <div class="label">Receitas do Dia</div>
+              <div class="label">Entradas do Dia</div>
               <div class="value" id="dailyEntries">R$ 0,00</div>
           </div>
           <div class="daily-stat">
@@ -452,17 +452,40 @@
 </div>
 
 <div id="editServiceModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
-    <div class="card" style="width:400px; padding:20px;">
-        <h4 style="margin-top:0;">Editar Serviço do Cliente</h4>
+    <div class="card" style="width:450px; padding:20px;">
+        <h4 style="margin-top:0;">Editar Agendamento (Admin)</h4>
         <form id="formEditSchedule" onsubmit="saveScheduleEdit(event)">
             <input type="hidden" id="editScheduleId">
-            <div style="margin-bottom:10px;">
-                <label class="muted small">Cliente:</label>
-                <div id="editClientName" style="font-weight:700;"></div>
+
+            <div class="grid" style="grid-template-columns:1fr 1fr; gap: 15px;">
+                <div>
+                    <label class="muted small">Cliente (Nome)</label>
+                    <input type="text" id="editClientNameInput" required>
+                </div>
+                <div>
+                    <label class="muted small">Veículo</label>
+                    <select id="editVehicle" onchange="renderEditServiceOptions(); updateEditServiceDetails();">
+                        <option value="moto">Moto</option>
+                        <option value="carro">Carro</option>
+                    </select>
+                </div>
             </div>
-            
-            <label class="muted small">Serviço Principal</label>
-            <select id="editService" required onchange="updateEditServiceDetails()"></select>
+
+            <div class="grid" style="grid-template-columns:1fr 1fr; gap: 15px; margin-top: 15px;">
+                <div>
+                    <label class="muted small">Data</label>
+                    <input type="date" id="editDate" required>
+                </div>
+                <div>
+                    <label class="muted small">Hora de Início</label>
+                    <input type="time" id="editTime" required onchange="updateEditServiceDetails()">
+                </div>
+            </div>
+
+            <div style="margin-top:15px;">
+                <label class="muted small">Serviço Principal</label>
+                <select id="editService" required onchange="updateEditServiceDetails()"></select>
+            </div>
             
             <div style="margin-top:15px;">
                 <label class="muted small">Adicionais</label>
@@ -471,18 +494,23 @@
 
             <div style="margin-top:15px;" class="row">
                 <div style="flex:1;">
-                    <label class="muted small">Novo Valor</label>
-                    <input type="text" id="editValor" readonly style="background:#f9f9f9;font-weight:700;color:var(--accent);">
+                    <label class="muted small">Duração (minutos)</label>
+                    <input type="number" id="editTempoInput" min="0" required oninput="updateEditServiceDetails(true)">
                 </div>
                 <div style="flex:1;">
-                    <label class="muted small">Novo Tempo (min)</label>
-                    <input type="text" id="editTempo" readonly style="background:#f9f9f9;font-weight:700;color:var(--info);">
+                    <label class="muted small">Previsão de Saída</label>
+                    <input type="text" id="editEndTime" readonly style="background:#f9f9f9;font-weight:700;color:var(--info);">
                 </div>
             </div>
 
             <div style="margin-top:12px;">
               <label class="muted small">Desconto (%)</label>
               <input type="number" id="editDiscount" min="0" max="100" placeholder="Ex: 10" onchange="updateEditServiceDetails()">
+            </div>
+
+            <div style="margin-top:12px;">
+                <label class="muted small">Valor Final (Com Desconto)</label>
+                <input type="text" id="editValor" readonly style="background:#f9f9f9;font-weight:800;color:var(--accent);">
             </div>
 
             <div style="margin-top:20px" class="row">
@@ -678,58 +706,119 @@ function loadToday(){
 
 /* =========== EDIT / MODAL =========== */
 function promptAdminPasswordForEdit(scheduleId) {
-    const pass = prompt(`🔐 Digite a Senha Administrativa para editar o serviço do agendamento ${scheduleId.substring(2)}:`); 
+    const pass = prompt(`🔐 Digite a Senha Administrativa para editar o agendamento ${scheduleId.substring(2)}:`); 
     if(pass === DATA.adminPass){ editScheduleService(scheduleId); } else if (pass !== null) { alert('🚫 Senha incorreta! A edição não foi autorizada.'); }
 }
+
+function renderEditServiceOptions(vehicle = null, selectedServiceId = null, selectedAdds = []) {
+    vehicle = vehicle || $('editVehicle').value;
+    const mainServices = DATA.services.filter(s => s.isAdd === false && (s.category === vehicle || s.category === 'both'));
+    const addServices = DATA.services.filter(s => s.isAdd === true && (s.category === vehicle || s.category === 'both'));
+    
+    const selectService = $('editService');
+    selectService.innerHTML = mainServices.map(s => `<option value="${s.id}" data-price="${s.price}" data-time="${s.time}" ${s.id === selectedServiceId ? 'selected' : ''}>${s.name} (${money(s.price)})</option>`).join('');
+
+    const inputAdds = $('editAdds');
+    inputAdds.innerHTML = addServices.map(s => `
+      <label class="small" style="display:flex;align-items:center;gap:5px;">
+        <input type="checkbox" name="edit-add-on" value="${s.id}" data-price="${s.price}" onchange="updateEditServiceDetails()" ${selectedAdds.includes(s.id) ? 'checked' : ''}>
+        ${s.name} (${money(s.price)})
+      </label>
+    `).join('');
+}
+
 function editScheduleService(scheduleId) {
     const schedule = DATA.schedules.find(s => s.id === scheduleId); if (!schedule) return;
     $('editScheduleId').value = scheduleId;
-    $('editClientName').innerText = `${schedule.name} (${schedule.vehicle ? schedule.vehicle.toUpperCase() : ''}) - ${formatDateBR(schedule.date)} às ${schedule.time}`;
-    const vehicle = schedule.vehicle; const currentServiceId = schedule.serviceId; const currentAdds = schedule.adds || [];
-    const mainServices = DATA.services.filter(s => s.isAdd===false && (s.category === vehicle || s.category === 'both'))
-    const addServices = DATA.services.filter(s => s.isAdd===true && (s.category === vehicle || s.category === 'both'))
-    const selectService = $('editService')
-    selectService.innerHTML = mainServices.map(s => `<option value="${s.id}" data-price="${s.price}" data-time="${s.time}" ${s.id === currentServiceId ? 'selected' : ''}>${s.name} (${money(s.price)})</option>`).join('')
-    const inputAdds = $('editAdds')
-    inputAdds.innerHTML = addServices.map(s => `
-      <label class="small" style="display:flex;align-items:center;gap:5px;">
-        <input type="checkbox" name="edit-add-on" value="${s.id}" data-price="${s.price}" onchange="updateEditServiceDetails()" ${currentAdds.includes(s.id) ? 'checked' : ''}>
-        ${s.name} (${money(s.price)})
-      </label>
-    `).join('')
-    $('editDiscount').value = schedule.discountPercent || ''
-    updateEditServiceDetails();
+    
+    // Preenche campos simples
+    $('editClientNameInput').value = schedule.name;
+    $('editVehicle').value = schedule.vehicle || 'moto'; // Garante um valor padrão
+    $('editDate').value = schedule.date;
+    $('editTime').value = schedule.time;
+    $('editDiscount').value = schedule.discountPercent || '';
+
+    // Renderiza serviços e adicionais
+    renderEditServiceOptions(schedule.vehicle, schedule.serviceId, schedule.adds || []);
+    
+    // Define a duração no campo de input, forçando o update com base nele
+    $('editTempoInput').value = schedule.tempo;
+    updateEditServiceDetails(true); // Força a atualização de valor e previsão baseada no TEMPO
+
     $('editServiceModal').style.display = 'flex';
 }
-function updateEditServiceDetails() {
+
+function updateEditServiceDetails(fromTempoInput = false) {
     const serviceId = $('editService').value;
     const adds = Array.from(document.querySelectorAll('#editAdds input[type="checkbox"]:checked')).map(cb => cb.value);
-    const details = getServicePriceAndDuration(serviceId, adds);
     const discount = Number($('editDiscount').value) || 0;
-    const final = applyDiscount(details.valor, discount);
-    $('editValor').value = money(final);
-    $('editTempo').value = `${details.tempo} min`;
+    const startTime = $('editTime').value;
+
+    let details = getServicePriceAndDuration(serviceId, adds);
+    let totalTime = details.tempo;
+
+    if (fromTempoInput) {
+        // Se a atualização veio do campo Tempo (duração)
+        totalTime = Number($('editTempoInput').value) || 0;
+        // O valor base é o valor calculado do serviço, mesmo se o tempo for alterado manualmente
+        const final = applyDiscount(details.valor, discount);
+        $('editValor').value = money(final);
+        $('editTempoInput').value = totalTime;
+    } else {
+        // Se a atualização veio do Serviço, Adicional ou Desconto
+        // O tempo é baseado na soma dos serviços
+        const final = applyDiscount(details.valor, discount);
+        $('editValor').value = money(final);
+        $('editTempoInput').value = totalTime; // Atualiza o campo de duração para refletir o serviço
+    }
+    
+    if (startTime && totalTime > 0) {
+        const endTime = addMinsToTime(startTime, totalTime);
+        $('editEndTime').value = `${endTime} (${totalTime} min)`;
+    } else {
+        $('editEndTime').value = `--:-- (${totalTime} min)`;
+    }
 }
+
 function saveScheduleEdit(e) {
     e.preventDefault();
     const scheduleId = $('editScheduleId').value;
     const schedule = DATA.schedules.find(s => s.id === scheduleId);
     if (!schedule) { alert('Erro: Agendamento não encontrado.'); closeEditModal(); return; }
+    
+    // Novos dados
+    const newName = $('editClientNameInput').value.trim();
+    const newVehicle = $('editVehicle').value;
+    const newDate = $('editDate').value;
+    const newTime = $('editTime').value;
     const newServiceId = $('editService').value;
     const newAdds = Array.from(document.querySelectorAll('#editAdds input[type="checkbox"]:checked')).map(cb => cb.value);
-    const discount = Number($('editDiscount').value) || 0;
-    const details = getServicePriceAndDuration(newServiceId, newAdds);
-    const newValor = applyDiscount(details.valor, discount);
-    const newTempo = details.tempo;
+    const newDiscount = Number($('editDiscount').value) || 0;
+    const newTempo = Number($('editTempoInput').value) || 0; // Pega o tempo do input (pode ser manual)
+    
+    // Recalcula o valor base (apenas serviços e adicionais) para aplicar o desconto
+    const baseDetails = getServicePriceAndDuration(newServiceId, newAdds);
+    const newValor = applyDiscount(baseDetails.valor, newDiscount);
+
+    // Validação de horário
+    if (isTimeSlotOccupied(newTime, newTempo, newDate, scheduleId)) { return; }
+
+    // Atualiza o objeto
+    schedule.name = newName;
+    schedule.vehicle = newVehicle;
+    schedule.date = newDate;
+    schedule.time = newTime;
     schedule.serviceId = newServiceId;
     schedule.adds = newAdds;
-    schedule.valor = newValor;
     schedule.tempo = newTempo;
-    schedule.discountPercent = discount || 0;
+    schedule.discountPercent = newDiscount;
+    schedule.valor = newValor;
+
+    // Se já estava pago, atualiza a entrada no caixa com o novo valor
     if (schedule.paid) {
         DATA.entries = DATA.entries.filter(e => e.scheduleId !== scheduleId);
         const paymentDateISO = new Date().toISOString(); 
-        DATA.entries.push({ id: idGen(), label: `Agendamento [EDITADO] - ${schedule.name} (${formatDateBR(schedule.date)})`, value: newValor, time: paymentDateISO, scheduleId: scheduleId });
+        DATA.entries.push({ id: idGen(), label: `Agendamento [EDITADO] - ${newName} (${formatDateBR(newDate)})`, value: newValor, time: paymentDateISO, scheduleId: scheduleId });
         alert(`Serviço atualizado. O novo valor de ${money(newValor)} foi registrado no caixa.`);
     } else {
         alert(`Serviço atualizado. Novo valor: ${money(newValor)}.`);
@@ -745,13 +834,34 @@ function confirmPayment(scheduleId){
   let msg = `Confirmar o pagamento de ${schedule.name} no valor de ${money(schedule.valor)}?`;
   if (schedule.date !== todayStr()) { msg += `\n\nATENÇÃO: Este agendamento era do dia ${formatDateBR(schedule.date)}.`; }
   if(confirm(msg)){
+    // Remove entrada antiga se houver (previne duplicação se o botão for clicado mais de uma vez por engano)
+    DATA.entries = DATA.entries.filter(e => e.scheduleId !== scheduleId); 
     schedule.paid = true;
-    DATA.entries = DATA.entries.filter(e => e.scheduleId !== scheduleId);
     DATA.entries.push({ id: idGen(), label: `Agendamento - ${schedule.name} (${formatDateBR(schedule.date)})`, value: schedule.valor, time: paymentDateISO, scheduleId: scheduleId })
     save()
     alert('Pagamento confirmado e registrado no caixa!')
     if(confirm('Deseja imprimir a nota não fiscal agora?')){ printNonFiscalNote(schedule); }
   }
+}
+
+function togglePaymentStatus(scheduleId){
+    const schedule = DATA.schedules.find(s => s.id === scheduleId); if(!schedule) return;
+    if (schedule.paid) {
+        if(confirm(`Tem certeza que deseja marcar o serviço de ${schedule.name} como PENDENTE (Estornar ${money(schedule.valor)} do caixa)?`)){
+            DATA.entries = DATA.entries.filter(e => e.scheduleId !== scheduleId);
+            schedule.paid = false;
+            save();
+            alert(`Status alterado para PENDENTE. Valor estornado do caixa.`);
+        }
+    } else {
+        if(confirm(`Confirmar o pagamento (Mudar para PAGO) do serviço de ${schedule.name} no valor de ${money(schedule.valor)}?`)){
+            const paymentDateISO = new Date().toISOString();
+            DATA.entries.push({ id: idGen(), label: `Agendamento - ${schedule.name} (${formatDateBR(schedule.date)})`, value: schedule.valor, time: paymentDateISO, scheduleId: scheduleId });
+            schedule.paid = true;
+            save();
+            alert(`Status alterado para PAGO. Valor adicionado ao caixa.`);
+        }
+    }
 }
 
 function cancelSchedule(id) {
@@ -783,7 +893,11 @@ function printNonFiscalNote(schedule){
       });
     }
     // summary
-    const discountLine = schedule.discountPercent && Number(schedule.discountPercent) > 0 ? `<div class="item"><span>Desconto (${schedule.discountPercent}%)</span><span class="value">- ${money(((DATA.services.find(s=>s.id===schedule.serviceId)?.price || 0) + (schedule.adds||[]).reduce((acc,id)=> acc + ((DATA.services.find(s=>s.id===id)?.price)||0),0) - schedule.valor))}</span></div>` : '';
+    // Calcula o valor total SEM desconto
+    const valorBase = (DATA.services.find(s=>s.id===schedule.serviceId)?.price || 0) + (schedule.adds||[]).reduce((acc,id)=> acc + ((DATA.services.find(s=>s.id===id)?.price)||0),0);
+    const descontoAplicado = valorBase - schedule.valor;
+
+    const discountLine = schedule.discountPercent && Number(schedule.discountPercent) > 0 ? `<div class="item"><span>Desconto (${schedule.discountPercent}%)</span><span class="value">- ${money(descontoAplicado)}</span></div>` : '';
     const noteContent = `
         <style>
             @media print {
@@ -910,7 +1024,8 @@ function createPastSchedule(e){
     }
     DATA.schedules.push(newSchedule)
     if(markPaid){
-        const paymentDateISO = new Date(date).toISOString().slice(0, 10) + new Date().toISOString().slice(10);
+        // Usa a data do agendamento para a entrada no caixa
+        const paymentDateISO = date + new Date().toISOString().slice(10); 
         DATA.entries.push({ id: idGen(), label: `Serviço Realizado (Histórico) - ${name} (${formatDateBR(date)})`, value: newSchedule.valor, time: paymentDateISO, scheduleId: newSchedule.id })
     }
     save()
@@ -963,10 +1078,10 @@ function updateTimeDetails(){
 }
 
 /* Verifica sobreposição de horário */
-function isTimeSlotOccupied(newStartTime, durationMins, newDate){
+function isTimeSlotOccupied(newStartTime, durationMins, newDate, excludeId = null){
     if(!newStartTime || durationMins <= 0) return false;
     const newStartTimeMins = parseTimeToMins(newStartTime); const newEndTimeMins = newStartTimeMins + durationMins;
-    const existingSchedules = DATA.schedules.filter(s => s.date === newDate);
+    const existingSchedules = DATA.schedules.filter(s => s.date === newDate && s.id !== excludeId);
     for(const s of existingSchedules){
         const existingStartTimeMins = parseTimeToMins(s.time); const existingEndTimeMins = existingStartTimeMins + s.tempo;
         const startsDuring = newStartTimeMins >= existingStartTimeMins && newStartTimeMins < existingEndTimeMins;
@@ -1034,7 +1149,7 @@ function loadHistory(){
     const endTime = addMinsToTime(s.time, s.tempo);
     const row = tbody.insertRow()
     row.insertCell().innerText = formatDateBR(s.date)
-    row.insertCell().innerText = s.name
+    row.insertCell().innerHTML = `<span class="client-name-clickable" onclick="promptAdminPasswordForEdit('${s.id}')">${s.name}</span>`
     let serviceText = service.name
     if (s.adds && s.adds.length > 0) {
         const addsNames = s.adds.map(addId => { const addSvc = DATA.services.find(a => a.id === addId); return addSvc ? addSvc.name : 'Adicional'; });
@@ -1046,7 +1161,24 @@ function loadHistory(){
     row.insertCell().innerText = money(s.valor)
     const statusCell = row.insertCell(); statusCell.className = s.paid ? 'paid' : 'not-paid'; statusCell.innerText = s.paid ? 'Pago' : 'Pendente'
     const actionCell = row.insertCell(); actionCell.className = 'actions'
-    if(!s.paid){ const payBtn = document.createElement('button'); payBtn.className = 'btn btn-sm'; payBtn.innerHTML = '<i class="fa-solid fa-hand-holding-dollar"></i> Pagar'; payBtn.onclick = () => confirmPayment(s.id); actionCell.appendChild(payBtn) } else { actionCell.innerHTML = '<span class="muted small"><i class="fa-solid fa-check"></i> Pago</span>' }
+    
+    // NOVO: Toggle de status de pagamento
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'btn btn-sm';
+    toggleBtn.style.backgroundColor = s.paid ? 'var(--danger)' : 'var(--success)';
+    toggleBtn.style.color = 'white';
+    toggleBtn.innerHTML = s.paid ? '<i class="fa-solid fa-rotate-left"></i> Pend.' : '<i class="fa-solid fa-check"></i> Pago';
+    toggleBtn.onclick = () => togglePaymentStatus(s.id);
+    actionCell.appendChild(toggleBtn);
+
+    const cancelBtn = document.createElement('button'); 
+    cancelBtn.className = 'btn ghost btn-sm'; 
+    cancelBtn.style.color = 'var(--danger)'; 
+    cancelBtn.style.borderColor = 'var(--danger)'; 
+    cancelBtn.innerHTML = '<i class="fa-solid fa-times"></i>'; 
+    cancelBtn.onclick = () => cancelSchedule(s.id); 
+    actionCell.appendChild(cancelBtn);
+
   })
 }
 
@@ -1115,7 +1247,15 @@ function saveEdit(id, field, newValue, row) {
     const service = DATA.services.find(s => s.id === id); if (!service) return;
     if (field === 'price' || field === 'time') { newValue = Number(newValue); if (isNaN(newValue) || newValue < 0) { alert(`Valor inválido para ${field}.`); renderServicesTable(); return; } } else if (field === 'isAdd') { newValue = newValue === 'true'; } else if (field === 'name' && !newValue.trim()) { alert('O nome do serviço não pode ser vazio.'); renderServicesTable(); return; }
     service[field] = newValue;
-    if(field === 'price' || field === 'time'){ DATA.schedules.filter(s => s.serviceId === id && !s.paid).forEach(s => { const details = getServicePriceAndDuration(s.serviceId, s.adds); s.valor = details.valor; s.tempo = details.tempo; }); }
+    // Se mudou preço ou tempo, recalcula os agendamentos PENDENTES que usam este serviço
+    if(field === 'price' || field === 'time'){ 
+        DATA.schedules.filter(s => s.serviceId === id && !s.paid).forEach(s => { 
+            const details = getServicePriceAndDuration(s.serviceId, s.adds); 
+            // Recalcula o valor com o desconto já existente (para manter a coerência)
+            s.valor = applyDiscount(details.valor, s.discountPercent || 0); 
+            s.tempo = details.tempo; 
+        }); 
+    }
     save(); renderServicesTable();
 }
 
@@ -1146,4 +1286,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 </body>
-</html> 
+</html>
