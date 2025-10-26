@@ -1,353 +1,307 @@
 <!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Wap Vupt — Agendamentos & Controle Financeiro</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<style>
-  /* DESIGN SOFISTICADO E MODERNO */
-  :root{
-    --bg: #f7f9fc;
-    --panel: #ffffff;
-    --muted: #6c757d;
-    --accent: #b71c1c; /* VERMELHO: O que você usa no seu tema */
-    --dark: #212529; /* PRETO/CINZA ESCURO: Cor principal */
-    --line: #e3e8f0; /* CINZA CLARO: Linhas e bordas */
-    --shadow: 0 4px 12px rgba(0,0,0,0.05);
-    --success: #28a745;
-    --danger: #dc3545;
-    --info: #1565c0;
-    --warning-bg: #fff3cd;
-    --warning-text: #856404;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:'Inter', 'Segoe UI', Roboto, Arial, sans-serif;color:var(--dark);background:var(--bg);}
 
+<html lang="pt-BR">  
+<head>  
+<meta charset="utf-8" />  
+<meta name="viewport" content="width=device-width,initial-scale=1" />  
+<title>Wap Vupt — Agendamentos & Controle Financeiro</title>  
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>  
+  /* DESIGN SOFISTICADO E MODERNO */  
+  :root{  
+    --bg: #f7f9fc;  
+    --panel: #ffffff;  
+    --muted: #6c757d;  
+    --accent: #b71c1c; /* VERMELHO: O que você usa no seu tema */  
+    --dark: #212529; /* PRETO/CINZA ESCURO: Cor principal */  
+    --line: #e3e8f0; /* CINZA CLARO: Linhas e bordas */  
+    --shadow: 0 4px 12px rgba(0,0,0,0.05);  
+    --success: #28a745;  
+    --danger: #dc3545;  
+    --info: #1565c0;  
+    --warning-bg: #fff3cd;  
+    --warning-text: #856404;  
+  }  
+  *{box-sizing:border-box}  
+  body{margin:0;font-family:'Inter', 'Segoe UI', Roboto, Arial, sans-serif;color:var(--dark);background:var(--bg);}  
   .layout{display:flex;min-height:100vh}
-  aside{width:80px;background:var(--dark);color:#fff;padding:18px 0;display:flex;flex-direction:column;align-items:center;gap:16px;box-shadow:2px 0 5px rgba(0,0,0,0.1);}
-  aside img.logo{width:50px;height:50px;border-radius:10px;object-fit:cover;border:2px solid rgba(255,255,255,0.1)}
-  aside .nav-btn{width:100%;background:transparent;border:0;color:#ccc;padding:12px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;transition:all 0.2s}
-  aside .nav-btn:hover{background:rgba(255,255,255,0.05);color:#fff}
-  aside .nav-btn.active{background:var(--accent);color:#fff;box-shadow:inset 3px 0 0 #fff;font-weight:700}
-  main{flex:1;padding:25px;display:flex;flex-direction:column;gap:20px}
-  header.top{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-bottom:10px;border-bottom:1px solid var(--line)}
-  .brand{display:flex;align-items:center;gap:12px}
-  .brand h1{margin:0;font-size:24px;font-weight:800;letter-spacing:-0.5px}
-  .brand .subtitle{font-size:14px;color:var(--muted)}
-  .card{background:var(--panel);border-radius:12px;padding:20px;box-shadow:var(--shadow);border:1px solid var(--line)}
-  .grid{display:grid;gap:15px}
-  .row{display:flex;gap:15px;align-items:center}
-  .col{flex:1}
-  .muted{color:var(--muted);font-size:14px}
-  .small{font-size:12px;color:var(--muted)}
+aside{width:80px;background:var(--dark);color:#fff;padding:18px 0;display:flex;flex-direction:column;align-items:center;gap:16px;box-shadow:2px 0 5px rgba(0,0,0,0.1);}
+aside img.logo{width:50px;height:50px;border-radius:10px;object-fit:cover;border:2px solid rgba(255,255,255,0.1)}
+aside .nav-btn{width:100%;background:transparent;border:0;color:#ccc;padding:12px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;transition:all 0.2s}
+aside .nav-btn:hover{background:rgba(255,255,255,0.05);color:#fff}
+aside .nav-btn.active{background:var(--accent);color:#fff;box-shadow:inset 3px 0 0 #fff;font-weight:700}
+main{flex:1;padding:25px;display:flex;flex-direction:column;gap:20px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand h1{margin:0;font-size:24px;font-weight:800;letter-spacing:-0.5px}
+.brand .subtitle{font-size:14px;color:var(--muted)}
+.card{background:var(--panel);border-radius:12px;padding:20px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.grid{display:grid;gap:15px}
+.row{display:flex;gap:15px;align-items:center}
+.col{flex:1}
+.muted{color:var(--muted);font-size:14px}
+.small{font-size:12px;color:var(--muted)}
 
-  table{width:100%;border-collapse:collapse;margin-top:15px}
-  th,td{padding:12px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
-  th{font-size:13px;color:var(--dark);background:var(--line);font-weight:700;text-transform:uppercase}
-  tr:last-child td{border-bottom:none}
-  .paid{color:var(--success);font-weight:700}
-  .not-paid{color:var(--danger);font-weight:700}
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th,td{padding:12px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+th{font-size:13px;color:var(--dark);background:var(--line);font-weight:700;text-transform:uppercase}
+tr:last-child td{border-bottom:none}
+.paid{color:var(--success);font-weight:700}
+.not-paid{color:var(--danger);font-weight:700}
 
-  input[type=text], input[type=time], input[type=date], input[type=number], select, textarea{
-    width:100%;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);font-size:14px;transition:border-color 0.2s
-  }
-  input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; }
-  button.btn{background:var(--accent);color:#fff;padding:10px 18px;border-radius:8px;border:0;cursor:pointer;font-weight:700;transition:all 0.2s}
-  button.btn:hover{background:#9e0000}
-  button.ghost{background:transparent;border:1px solid var(--line);color:var(--dark);padding:10px 18px;border-radius:8px;transition:all 0.2s}
-  button.ghost:hover{background:var(--line)}
-  .btn-sm { padding: 6px 10px; font-size: 12px; }
-  .actions{display:flex;gap:10px}
-  .controls{display:flex;gap:10px;align-items:center}
-  footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
+input[type=text], input[type=time], input[type=date], input[type=number], select, textarea{
+width:100%;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);font-size:14px;transition:border-color 0.2s
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; }
+button.btn{background:var(--accent);color:#fff;padding:10px 18px;border-radius:8px;border:0;cursor:pointer;font-weight:700;transition:all 0.2s}
+button.btn:hover{background:#9e0000}
+button.ghost{background:transparent;border:1px solid var(--line);color:var(--dark);padding:10px 18px;border-radius:8px;transition:all 0.2s}
+button.ghost:hover{background:var(--line)}
+.btn-sm { padding: 6px 10px; font-size: 12px; }
+.actions{display:flex;gap:10px}
+.controls{display:flex;gap:10px;align-items:center}
+footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
 
-  .finance-grid-main { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-  .finance-stat-card { padding: 20px; border-radius: 10px; background: var(--panel); box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 5px solid; }
-  .finance-stat-card.in { border-left-color: var(--success); } .finance-stat-card.out { border-left-color: var(--danger); } .finance-stat-card.bal { border-left-color: var(--info); }
-  .finance-stat-card .label { font-size: 14px; color: var(--muted); margin-bottom: 5px; } .finance-stat-card .value { font-size: 28px; font-weight: 800; color: var(--dark); }
-  .daily-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; background: #f0f4f8; border-radius: 8px; border: 1px solid var(--line); margin-bottom: 20px; }
-  .daily-stat { padding: 10px; background: var(--panel); border-radius: 6px; border: 1px solid #ddd; }
-  .daily-stat .label { font-size: 11px; color: var(--muted); } .daily-stat .value { font-size: 18px; font-weight: 700; margin-top: 2px; }
+.finance-grid-main { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+.finance-stat-card { padding: 20px; border-radius: 10px; background: var(--panel); box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 5px solid; }
+.finance-stat-card.in { border-left-color: var(--success); } .finance-stat-card.out { border-left-color: var(--danger); } .finance-stat-card.bal { border-left-color: var(--info); }
+.finance-stat-card .label { font-size: 14px; color: var(--muted); margin-bottom: 5px; } .finance-stat-card .value { font-size: 28px; font-weight: 800; color: var(--dark); }
+.daily-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; background: #f0f4f8; border-radius: 8px; border: 1px solid var(--line); margin-bottom: 20px; }
+.daily-stat { padding: 10px; background: var(--panel); border-radius: 6px; border: 1px solid #ddd; }
+.daily-stat .label { font-size: 11px; color: var(--muted); } .daily-stat .value { font-size: 18px; font-weight: 700; margin-top: 2px; }
 
-  #monthlySummaryTable tbody td:nth-child(3) { color: var(--success); font-weight: 700; }
-  #monthlySummaryTable tbody td:nth-child(4) { color: var(--danger); font-weight: 700; }
-  #monthlySummaryTable tbody td:nth-child(5) { font-weight: 800; }
+#monthlySummaryTable tbody td:nth-child(3) { color: var(--success); font-weight: 700; }
+#monthlySummaryTable tbody td:nth-child(4) { color: var(--danger); font-weight: 700; }
+#monthlySummaryTable tbody td:nth-child(5) { font-weight: 800; }
 
-  #cash-info-today { display: none; }
+#cash-info-today { display: none; }
 
-  .edit-mode input, .edit-mode select { padding: 4px; font-size: 13px; margin: -4px 0; border: 1px solid var(--accent); }
+.edit-mode input, .edit-mode select { padding: 4px; font-size: 13px; margin: -4px 0; border: 1px solid var(--accent); }
 
-  .client-history-item { padding: 8px; margin-bottom: 5px; border-radius: 4px; background: #f0f8ff; border: 1px solid var(--line); cursor: pointer; transition: background 0.2s; }
-  .client-history-item:hover { background: #e6f7ff; }
-  .client-history-item .service-name { font-weight: 700; color: var(--dark); font-size: 14px; }
-  .client-history-item .details { font-size: 11px; color: var(--muted); margin-top: 2px; display: flex; justify-content: space-between; }
+.client-history-item { padding: 8px; margin-bottom: 5px; border-radius: 4px; background: #f0f8ff; border: 1px solid var(--line); cursor: pointer; transition: background 0.2s; }
+.client-history-item:hover { background: #e6f7ff; }
+.client-history-item .service-name { font-weight: 700; color: var(--dark); font-size: 14px; }
+.client-history-item .details { font-size: 11px; color: var(--muted); margin-top: 2px; display: flex; justify-content: space-between; }
 
-  .client-name-clickable { font-weight: 700; cursor: pointer; color: var(--dark); transition: color 0.2s; }
-  .client-name-clickable:hover { color: var(--accent); text-decoration: underline; }
+.client-name-clickable { font-weight: 700; cursor: pointer; color: var(--dark); transition: color 0.2s; }
+.client-name-clickable:hover { color: var(--accent); text-decoration: underline; }
 
-  .past-date-alert { margin-top: 10px; padding: 8px; border-radius: 6px; background-color: var(--warning-bg); color: var(--warning-text); font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 8px; border: 1px solid #ffeeba; }
+.past-date-alert { margin-top: 10px; padding: 8px; border-radius: 6px; background-color: var(--warning-bg); color: var(--warning-text); font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 8px; border: 1px solid #ffeeba; }
 
-  @media (max-width:880px){ aside{width:60px} .brand h1{font-size:20px} .finance-grid-main, .daily-summary { grid-template-columns: 1fr; } }
+@media (max-width:880px){ aside{width:60px} .brand h1{font-size:20px} .finance-grid-main, .daily-summary { grid-template-columns: 1fr; } }
+
+/* Estilo para a lista de despesas em Admin */
+.expense-item { display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed #eee; padding:4px 0; font-size: 12px; }
+.expense-item span { flex:1; }
+.expense-item .actions { gap: 4px; }
+.expense-item.edit-mode { background-color: #f7f9fc; padding: 4px; border-radius: 4px; }
+
 </style>
-</head>
-<body>
-<div class="layout">
-  <aside>
-    <img id="sideLogo" class="logo" src="" style="display:none" alt="Logo">
-    <button class="nav-btn active" data-view="today" title="Agendamentos" onclick="nav(this)"><i class="fa-solid fa-calendar-days"></i><div style="font-size:11px">Hoje</div></button>
-    <button class="nav-btn" data-view="new" title="Novo" onclick="nav(this)"><i class="fa-solid fa-plus"></i><div style="font-size:11px">Novo</div></button>
-    <button class="nav-btn" data-view="past-service" title="Serviço Passado" onclick="nav(this)"><i class="fa-solid fa-clock-rotate-left"></i><div style="font-size:11px">Histórico</div></button>
-    <button class="nav-btn" data-view="calendar" title="Calendário" onclick="nav(this)"><i class="fa-solid fa-calendar"></i><div style="font-size:11px">Agenda</div></button>
-    <button class="nav-btn" data-view="history" title="Histórico" onclick="nav(this)"><i class="fa-solid fa-list-ul"></i><div style="font-size:11px">Histórico</div></button>
-    <button class="nav-btn" data-view="admin" title="Admin" onclick="nav(this)"><i class="fa-solid fa-gauge-high"></i><div style="font-size:11px">Admin</div></button>
-    <div style="flex:1"></div>
-    <div style="font-size:10px;color:#bbb">Wap Vupt </div>
-  </aside>
 
-  <main>
-    <header class="top">
-      <div class="brand">
-        <h1 id="titleApp">Wap Vupt </h1>
-        <div class="subtitle muted">Agendamentos • Caixa • Controle</div>
-      </div>
-      <div class="controls">
-        <div class="small muted" id="clock">--:--</div>
-        <button class="btn ghost btn-sm" onclick="exportData()"><i class="fa-solid fa-file-export"></i> Exportar</button>
-        <button class="btn btn-sm" onclick="downloadJson()"><i class="fa-solid fa-database"></i> Backup</button>
-      </div>
-    </header>
+</head>  
+<body>  
+<div class="layout">  
+  <aside>  
+    <img id="sideLogo" class="logo" src="" style="display:none" alt="Logo">  
+    <button class="nav-btn active" data-view="today" title="Agendamentos" onclick="nav(this)"><i class="fa-solid fa-calendar-days"></i><div style="font-size:11px">Hoje</div></button>  
+    <button class="nav-btn" data-view="new" title="Novo" onclick="nav(this)"><i class="fa-solid fa-plus"></i><div style="font-size:11px">Novo</div></button>  
+    <button class="nav-btn" data-view="calendar" title="Calendário" onclick="nav(this)"><i class="fa-solid fa-calendar"></i><div style="font-size:11px">Agenda</div></button>  
+    <button class="nav-btn" data-view="history" title="Histórico" onclick="nav(this)"><i class="fa-solid fa-list-ul"></i><div style="font-size:11px">Histórico</div></button>  
+    <button class="nav-btn" data-view="admin" title="Admin" onclick="nav(this)"><i class="fa-solid fa-gauge-high"></i><div style="font-size:11px">Admin</div></button>  
+    <div style="flex:1"></div>  
+    <div style="font-size:10px;color:#bbb">Wap Vupt </div>  
+  </aside>    
+  <main>  
+    <header class="top">  
+      <div class="brand">  
+        <h1 id="titleApp">Wap Vupt </h1>  
+        <div class="subtitle muted">Agendamentos • Caixa • Controle</div>  
+      </div>  
+      <div class="controls">  
+        <div class="small muted" id="clock">--:--</div>  
+        <button class="btn ghost btn-sm" onclick="exportData()"><i class="fa-solid fa-file-export"></i> Exportar</button>  
+        <button class="btn btn-sm" onclick="downloadJson()"><i class="fa-solid fa-database"></i> Backup</button>  
+      </div>  
+    </header>  
+    
+<section id="view-today" class="card" style="padding:15px">  
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">  
+    <div>  
+      <div class="muted">Agendamentos de</div>  
+      <div style="font-weight:800;font-size:20px" id="todayLabel"></div>  
+      <div class="muted small" id="todayCount">0 agendamentos</div>  
+    </div>  
+    <div class="card" style="padding:15px;width:300px">  
+      <h4>Fila de Hoje</h4>  
+      <div style="display:flex;flex-direction:column;gap:10px">  
+        <div class="row"><div style="flex:1">Total agendamentos</div><div id="rushCount" style="font-weight:700">0</div></div>  
+        <div class="row"><div style="flex:1">Pendentes de pagamento</div><div id="pendingCount" style="color:var(--danger);font-weight:700">0</div></div>  
+        <div class="row"><div style="flex:1">Recebido hoje</div><div id="collectedToday" style="font-weight:800;color:var(--success)">R$ 0,00</div></div>  
+      </div>  
+      <div style="margin-top:20px" class="row">  
+        <button class="btn ghost btn-sm" onclick="printToday()"><i class="fa-solid fa-print"></i> Imprimir</button>  
+        <button class="btn ghost btn-sm" onclick="clearToday()">Limpar Dia</button>  
+      </div>  
+    </div>  
+  </div>  
 
-    <section id="view-today" class="card" style="padding:15px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
-        <div>
-          <div class="muted">Agendamentos de</div>
-          <div style="font-weight:800;font-size:20px" id="todayLabel"></div>
-          <div class="muted small" id="todayCount">0 agendamentos</div>
-        </div>
-        <div class="card" style="padding:15px;width:300px">
-          <h4>Fila de Hoje</h4>
-          <div style="display:flex;flex-direction:column;gap:10px">
-            <div class="row"><div style="flex:1">Total agendamentos</div><div id="rushCount" style="font-weight:700">0</div></div>
-            <div class="row"><div style="flex:1">Pendentes de pagamento</div><div id="pendingCount" style="color:var(--danger);font-weight:700">0</div></div>
-            <div class="row"><div style="flex:1">Recebido hoje</div><div id="collectedToday" style="font-weight:800;color:var(--success)">R$ 0,00</div></div>
-          </div>
-          <div style="margin-top:20px" class="row">
-            <button class="btn ghost btn-sm" onclick="printToday()"><i class="fa-solid fa-print"></i> Imprimir</button>
-            <button class="btn ghost btn-sm" onclick="clearToday()">Limpar Dia</button>
-          </div>
-        </div>
-      </div>
+  <div style="margin-top:15px">  
+    <table id="tableToday">  
+      <thead><tr><th>#</th><th>Cliente</th><th>Serviço</th><th>Hora (Início / Saída)</th><th>Valor</th><th>Status</th><th>Ações</th><th>Nota</th></tr></thead>  
+      <tbody></tbody>  
+    </table>  
+  </div>  
+</section>  
 
-      <div style="margin-top:15px">
-        <table id="tableToday">
-          <thead><tr><th>#</th><th>Cliente</th><th>Serviço</th><th>Hora (Início / Saída)</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
+<section id="view-new" class="card" style="display:none">  
+  <h3>Novo Agendamento / Registro de Serviço</h3>  
+  <form id="formNew" onsubmit="createSchedule(event)">  
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:15px">  
+      <div>  
+        <label class="muted small">Nome do cliente</label>  
+        <input type="text" id="inputName" required oninput="loadClientHistory(this.value)">  
+      </div>  
+      <div>  
+        <label class="muted small">Tipo de Serviço</label>  
+        <select id="inputVehicle" onchange="renderServiceOptions(); updateTimeDetails();">  
+          <option value="moto">Moto</option>  
+          <option value="carro">Carro</option>  
+          <option value="outros">Estofado / Outros</option>  </select>  
+      </div>  
+      <div>  
+        <label class="muted small">Data do Serviço/Agendamento</label>  
+        <input type="date" id="inputDate" min="2024-01-01" max="2028-12-31" required onchange="updateTimeDetails(); updatePastDateWarning()">  
+      </div>  
+      <div>  
+        <label class="muted small">Serviço principal</label>  
+        <select id="inputService" required onchange="updateTimeDetails()"></select>  
+      </div>  
+      <div>  
+        <label class="muted small">Hora de início (Aprox.)</label>  
+        <input type="time" id="inputTime" onchange="updateTimeDetails()">  
+      </div>  
+      <div>  
+         <label class="muted small">Previsão de Saída / Tempo Total</label>  
+         <input type="text" id="endTime" readonly style="background:#f9f9f9;font-weight:700;color:var(--info);" value="--:--">  
+      </div>  
+    </div>  
 
-    <section id="view-new" class="card" style="display:none">
-      <h3>Novo Agendamento</h3>
-      <form id="formNew" onsubmit="createSchedule(event)">
-        <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:15px">
-          <div>
-            <label class="muted small">Nome do cliente</label>
-            <input type="text" id="inputName" required oninput="loadClientHistory(this.value)">
-          </div>
-          <div>
-            <label class="muted small">Veículo</label>
-            <select id="inputVehicle" onchange="renderServiceOptions(); updateTimeDetails();">
-              <option value="moto">Moto</option>
-              <option value="carro">Carro</option>
-            </select>
-          </div>
-          <div>
-            <label class="muted small">Data</label>
-            <input type="date" id="inputDate" min="2024-01-01" max="2028-12-31" required onchange="updateTimeDetails()">
-          </div>
-          <div>
-            <label class="muted small">Serviço principal</label>
-            <select id="inputService" required onchange="updateTimeDetails()"></select>
-          </div>
-          <div>
-            <label class="muted small">Hora de início</label>
-            <input type="time" id="inputTime" required onchange="updateTimeDetails()">
-          </div>
-          <div>
-             <label class="muted small">Previsão de Saída</label>
-             <input type="text" id="endTime" readonly style="background:#f9f9f9;font-weight:700;color:var(--info);" value="--:--">
-          </div>
-        </div>
+    <div id="pastDateWarning" class="past-date-alert" style="display:none; margin-top:15px;">  
+        <i class="fa-solid fa-triangle-exclamation"></i>  
+        Data anterior/passada selecionada! Registrando como **Serviço Realizado (Histórico)**.  
+    </div>  
 
-        <div id="clientHistoryContainer" style="margin-top:15px; border:1px solid var(--line); padding:10px; border-radius:8px; display:none;">
-            <label class="muted small">Agendamentos Passados</label>
-            <div id="clientHistoryList" style="max-height:150px; overflow-y:auto; padding-right: 5px;"></div>
-            <div class="muted small" style="margin-top:5px; text-align:right;">Clique para preencher campos.</div>
-        </div>
+    <div id="clientHistoryContainer" style="margin-top:15px; border:1px solid var(--line); padding:10px; border-radius:8px; display:none;">  
+        <label class="muted small">Agendamentos Passados</label>  
+        <div id="clientHistoryList" style="max-height:150px; overflow-y:auto; padding-right: 5px;"></div>  
+        <div class="muted small" style="margin-top:5px; text-align:right;">Clique para preencher campos.</div>  
+    </div>  
 
-        <div style="margin-top:20px">
-          <label class="muted small">Adicionais</label>
-          <div id="inputAdds" style="display:flex;flex-wrap:wrap;gap:15px;border:1px solid var(--line);padding:10px;border-radius:8px;"></div>
-        </div>
+    <div style="margin-top:20px">  
+      <label class="muted small">Adicionais</label>  
+      <div id="inputAdds" style="display:flex;flex-wrap:wrap;gap:15px;border:1px solid var(--line);padding:10px;border-radius:8px;"></div>  
+    </div>  
 
-        <div style="margin-top:12px; display:flex; gap:10px; align-items:center;">
-          <div style="flex:1">
-            <label class="muted small">Desconto (%) <span class="small muted">(opcional)</span></label>
-            <input type="number" id="inputDiscount" min="0" max="100" placeholder="Ex: 10" onchange="updateTimeDetails()">
-          </div>
-          <div style="width:260px">
-            <label class="muted small">Valor Total (com desconto)</label>
-            <input type="text" id="inputTotalWithDiscount" readonly style="background:#f9f9f9;font-weight:800;color:var(--accent);">
-          </div>
-        </div>
+    <div style="margin-top:12px; display:flex; gap:10px; align-items:center;">  
+      <div style="flex:1">  
+        <label class="muted small">Desconto (%) <span class="small muted">(Apenas informativo. Calcule o valor final manualmente.)</span></label>  
+        <input type="number" id="inputDiscount" min="0" max="100" placeholder="Ex: 10" onchange="updateTimeDetails()">  
+      </div>  
+      <div style="width:260px">  
+        <label class="muted small">Valor Total (Final/Editável)</label>  
+        <input type="number" id="inputTotalWithDiscount" step="0.01" style="background:var(--panel);font-weight:800;color:var(--accent);">  
+      </div>  
+    </div>  
+    
+    <div id="paymentOptionContainer" style="margin-top:12px; display:flex; align-items:center; gap:8px;">  
+        <input type="checkbox" id="inputMarkPaid">  
+        <label for="inputMarkPaid" class="small muted">Marcar como <strong>Pago</strong> ao registrar (serviço concluído/histórico)</label>  
+    </div>  
 
-        <div style="margin-top:20px" class="row">
-          <button class="btn" type="submit"><i class="fa-solid fa-calendar-check"></i> Confirmar agendamento</button>
-          <button class="btn ghost" type="button" onclick="document.getElementById('formNew').reset(); renderServiceOptions(); updateTimeDetails()">Limpar</button>
-        </div>
-      </form>
-    </section>
+    <div style="margin-top:20px" class="row">  
+      <button class="btn" type="submit"><i class="fa-solid fa-calendar-check"></i> Confirmar / Registrar Serviço</button>  
+      <button class="btn ghost" type="button" onclick="resetNewForm()">Limpar</button>  
+    </div>  
+  </form>  
+</section>  
 
-    <section id="view-past-service" class="card" style="display:none">
-        <h3>Registrar Serviço Realizado (Agendamento Passado)</h3>
-        <p class="muted">Use este formulário para registrar um serviço que foi realizado em uma data anterior ou que não foi agendado previamente.</p>
-        <form id="formPastService" onsubmit="createPastSchedule(event)">
-            <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:15px">
-                <div>
-                    <label class="muted small">Data do Serviço Realizado</label>
-                    <input type="date" id="inputPastDate" min="2024-01-01" max="2028-12-31" required onchange="updatePastDateWarning(); updatePastTimeDetails();">
-                    <div id="pastDateWarning" class="past-date-alert" style="display:none;">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        Data anterior! Registrando como **Agendamento Passado**.
-                    </div>
-                </div>
-                <div>
-                    <label class="muted small">Nome do cliente</label>
-                    <input type="text" id="inputPastName" required oninput="loadClientHistory(this.value)">
-                </div>
-                <div>
-                    <label class="muted small">Veículo</label>
-                    <select id="inputPastVehicle" onchange="renderPastServiceOptions(); updatePastTimeDetails();">
-                        <option value="moto">Moto</option>
-                        <option value="carro">Carro</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="muted small">Serviço principal</label>
-                    <select id="inputPastService" required onchange="updatePastTimeDetails()"></select>
-                </div>
-                <div>
-                    <label class="muted small">Hora de início (Aprox.)</label>
-                    <input type="time" id="inputPastTime" onchange="updatePastTimeDetails()">
-                </div>
-                <div>
-                    <label class="muted small">Tempo/Previsão</label>
-                    <input type="text" id="pastEndTime" readonly style="background:#f9f9f9;font-weight:700;color:var(--info);" value="--:--">
-                </div>
-            </div>
+<section id="view-calendar" class="card" style="display:none">  
+  <h3>Calendário de Agendamentos</h3>  
+  <div class="row">  
+    <div style="flex:1">  
+      <label class="muted small">Escolha uma data</label>  
+      <input type="date" id="calendarDate" min="2024-01-01" max="2028-12-31" onchange="showDate()" />  
+    </div>  
+    <div style="width:250px">  
+      <label class="muted small">Buscar por cliente</label>  
+      <input type="text" id="searchClient" placeholder="Digite o nome do cliente" oninput="showDate()" />  
+    </div>  
+  </div>  
+  <div style="margin-top:15px">  
+    <table id="tableCalendar">
+      <thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Hora (Início / Saída)</th><th>Valor</th><th>Status</th><th>Ações</th><th>Nota</th></tr></thead>
+      <tbody></tbody>
+    </table>  
+  </div>  
+</section>  
 
-            <div style="margin-top:20px">
-                <label class="muted small">Adicionais</label>
-                <div id="inputPastAdds" style="display:flex;flex-wrap:wrap;gap:15px;border:1px solid var(--line);padding:10px;border-radius:8px;"></div>
-            </div>
+<section id="view-history" class="card" style="display:none">  
+  <h3>Histórico Completo</h3>  
+  <div class="row" style="margin-bottom:15px">  
+    <div class="col">  
+      <label class="muted small">Pesquisar por Cliente/Serviço</label>  
+      <input type="text" id="historySearchInput" placeholder="Digite o nome do cliente ou serviço" oninput="loadHistory()">  
+    </div>  
+    <div style="width:150px">  
+      <label class="muted small">Status</label>  
+      <select id="historyStatusFilter" onchange="loadHistory()">  
+        <option value="">Todos</option>  
+        <option value="pendente">Pendente</option>  
+        <option value="pago">Pago</option>  
+      </select>  
+    </div>  
+  </div>  
+  <div class="muted small" id="historyCountLabel">Lista dos agendamentos mais recentes (máx. 200).</div>  
+  <div style="margin-top:15px">  
+    <table>  
+      <thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Hora (Início / Saída)</th><th>Tempo</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>  
+      <tbody id="tableHistoryBody"></tbody>  
+    </table>  
+  </div>  
+</section>  
 
-            <div style="margin-top:12px; display:flex; gap:10px; align-items:center;">
-              <div style="flex:1">
-                <label class="muted small">Desconto (%) <span class="small muted">(opcional)</span></label>
-                <input type="number" id="inputPastDiscount" min="0" max="100" placeholder="Ex: 10" onchange="updatePastTimeDetails()">
-              </div>
-              <div style="width:260px">
-                <label class="muted small">Valor Total (com desconto)</label>
-                <input type="text" id="inputPastTotalWithDiscount" readonly style="background:#f9f9f9;font-weight:800;color:var(--accent);">
-              </div>
-            </div>
+<section id="view-admin" class="card" style="display:none">  
+  <h3>Área Administrativa e Financeira</h3>  
 
-            <div style="margin-top:12px; display:flex; align-items:center; gap:8px;">
-                <input type="checkbox" id="inputPastMarkPaid">
-                <label for="inputPastMarkPaid" class="small muted">Marcar este serviço como <strong>Pago</strong> ao registrar (opcional)</label>
-            </div>
+  <h4 style="margin-top:10px">Resumo Financeiro - Hoje (<span id="adminTodayDate"></span>)</h4>  
+  <div class="daily-summary">  
+      <div class="daily-stat">  
+          <div class="label">Entradas do Dia</div>  
+          <div class="value" id="dailyEntries">R$ 0,00</div>  
+      </div>  
+      <div class="daily-stat">  
+          <div class="label">Despesas do Dia</div>  
+          <div class="value" id="dailyExpenses">R$ 0,00</div>  
+      </div>  
+      <div class="daily-stat">  
+          <div class="label">Saldo do Dia (Entradas - Saídas)</div>  
+          <div class="value" id="dailyBalance">R$ 0,00</div>  
+      </div>  
+  </div>  
 
-            <div style="margin-top:20px" class="row">
-                <button class="btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Registrar Serviço Passado</button>
-                <button class="btn ghost" type="button" onclick="document.getElementById('formPastService').reset(); renderPastServiceOptions(); updatePastDateWarning(); updatePastTimeDetails()">Limpar</button>
-            </div>
-        </form>
-    </section>
-
-    <section id="view-calendar" class="card" style="display:none">
-      <h3>Calendário de Agendamentos</h3>
-      <div class="row">
-        <div style="flex:1">
-          <label class="muted small">Escolha uma data</label>
-          <input type="date" id="calendarDate" min="2024-01-01" max="2028-12-31" onchange="showDate()" />
-        </div>
-        <div style="width:250px">
-          <label class="muted small">Buscar por cliente</label>
-          <input type="text" id="searchClient" placeholder="Digite o nome do cliente" oninput="showDate()" />
-        </div>
-      </div>
-      <div style="margin-top:15px">
-        <table id="tableCalendar"><thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Hora (Início / Saída)</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead><tbody></tbody></table>
-      </div>
-    </section>
-
-    <section id="view-history" class="card" style="display:none">
-      <h3>Histórico Completo</h3>
-      <div class="row" style="margin-bottom:15px">
-        <div class="col">
-          <label class="muted small">Pesquisar por Cliente/Serviço</label>
-          <input type="text" id="historySearchInput" placeholder="Digite o nome do cliente ou serviço" oninput="loadHistory()">
-        </div>
-        <div style="width:150px">
-          <label class="muted small">Status</label>
-          <select id="historyStatusFilter" onchange="loadHistory()">
-            <option value="">Todos</option>
-            <option value="pendente">Pendente</option>
-            <option value="pago">Pago</option>
-          </select>
-        </div>
-      </div>
-      <div class="muted small" id="historyCountLabel">Lista dos agendamentos mais recentes (máx. 200).</div>
-      <div style="margin-top:15px">
-        <table>
-          <thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Hora (Início / Saída)</th><th>Tempo</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>
-          <tbody id="tableHistoryBody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section id="view-admin" class="card" style="display:none">
-      <h3>Área Administrativa e Financeira</h3>
-
-      <h4 style="margin-top:10px">Resumo Financeiro - Hoje (<span id="adminTodayDate"></span>)</h4>
-      <div class="daily-summary">
-          <div class="daily-stat">
-              <div class="label">Entradas do Dia</div>
-              <div class="value" id="dailyEntries">R$ 0,00</div>
-          </div>
-          <div class="daily-stat">
-              <div class="label">Despesas do Dia</div>
-              <div class="value" id="dailyExpenses">R$ 0,00</div>
-          </div>
-          <div class="daily-stat">
-              <div class="label">Saldo do Dia (Entradas - Saídas)</div>
-              <div class="value" id="dailyBalance">R$ 0,00</div>
-          </div>
-      </div>
-
-      <h4 style="margin-top:0px">Dashboard de Fluxo de Caixa (Total Geral)</h4>
-      <div class="finance-grid-main">
-        <div class="finance-stat-card in">
-          <div class="label">Total de Entradas (Receitas)</div>
-          <div class="value" id="dashTotalEntries">R$ 0,00</div>
-          <div class="detail">Soma de todos os pagamentos de agendamentos.</div>
-        </div>
-        <div class="finance-stat-card out">
-          <div class="label">Total de Saídas (Despesas)</div>
-          <div class="value" id="dashTotalExpenses">R$ 0,00</div>
-          <div class="detail">Soma de todas as despesas registradas.</div>
+  <h4 style="margin-top:0px">Dashboard de Fluxo de Caixa (Total Geral)</h4>  
+  <div class="finance-grid-main">  
+    <div class="finance-stat-card in">  
+      <div class="label">Total de Entradas (Receitas)</div>  
+      <div class="value" id="dashTotalEntries">R$ 0,00</div>  
+      <div class="detail">Soma de todos os pagamentos de agendamentos.</div>  
+    </div>  
+    <div class="finance-stat-card out">  
+      <div class="label">Total de Saídas (Despesas)</div>  
+      <div class="value" id="dashTotalExpenses">R$ 0,00</div>  
+      <div class="detail">Soma de todas as despesas registradas.</div>
         </div>
         <div class="finance-stat-card bal">
           <div class="label">Saldo Final (Atual)</div>
@@ -415,7 +369,7 @@
         <div style="margin-top:15px">
           <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:8px">
             <input type="text" id="svcName" placeholder="Nome do serviço">
-            <select id="svcCategory"><option value="both">Ambos</option><option value="moto">Moto</option><option value="carro">Carro</option></select>
+            <select id="svcCategory"><option value="both">Ambos</option><option value="moto">Moto</option><option value="carro">Carro</option><option value="outros">Outros</option></select>
             <select id="svcIsAdd"><option value="false">Principal</option><option value="true">Adicional</option></select>
             <input type="number" id="svcPrice" placeholder="Preço (R$)" min="0" step="0.01">
             <input type="number" id="svcTime" placeholder="Tempo (min)" min="0">
@@ -440,8 +394,10 @@
             <div id="listEntries" style="max-height:280px;overflow-y:auto;border:1px solid var(--line);padding:8px;border-radius:8px"></div>
           </div>
           <div>
-            <label class="muted small">Despesas</label>
-            <div id="listExpenses" style="max-height:280px;overflow-y:auto;border:1px solid var(--line);padding:8px;border-radius:8px"></div>
+            <label class="muted small">Histórico de Despesas (Admin)</label>
+            <div id="listExpenses" style="max-height:280px;overflow-y:auto;border:1px solid var(--line);padding:8px;border-radius:8px">
+                </div>
+            <button class="btn ghost btn-sm" style="width:100%; margin-top: 8px;" onclick="promptAdminPasswordForExpenseHistory()"><i class="fa-solid fa-file-invoice-dollar"></i> Ver/Editar Histórico Completo</button>
           </div>
         </div>
       </div>
@@ -463,10 +419,11 @@
                     <input type="text" id="editClientNameInput" required>
                 </div>
                 <div>
-                    <label class="muted small">Veículo</label>
+                    <label class="muted small">Tipo de Serviço</label>
                     <select id="editVehicle" onchange="renderEditServiceOptions(); updateEditServiceDetails();">
                         <option value="moto">Moto</option>
                         <option value="carro">Carro</option>
+                        <option value="outros">Estofado / Outros</option>
                     </select>
                 </div>
             </div>
@@ -504,16 +461,11 @@
             </div>
 
             <div style="margin-top:12px;">
-              <label class="muted small">Desconto (%)</label>
-              <input type="number" id="editDiscount" min="0" max="100" placeholder="Ex: 10" onchange="updateEditServiceDetails()">
+              <label class="muted small">Valor Final (Com Desconto)</label>
+              <input type="number" id="editValor" step="0.01" style="background:var(--panel);font-weight:800;color:var(--accent);">
             </div>
-
-            <div style="margin-top:12px;">
-                <label class="muted small">Valor Final (Com Desconto)</label>
-                <input type="text" id="editValor" readonly style="background:#f9f9f9;font-weight:800;color:var(--accent);">
-            </div>
-
-            <div style="margin-top:20px" class="row">
+            
+            <input type="hidden" id="editDiscount" value="0"> <div style="margin-top:20px" class="row">
                 <button class="btn" type="submit"><i class="fa-solid fa-save"></i> Salvar Edição</button>
                 <button class="btn ghost" type="button" onclick="closeEditModal()">Cancelar</button>
             </div>
@@ -521,9 +473,47 @@
     </div>
 </div>
 
+<div id="expenseHistoryModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div class="card" style="width:700px; padding:20px;">
+        <h4 style="margin-top:0;">Histórico Completo de Despesas</h4>
+        <div style="max-height: 400px; overflow-y: auto;">
+            <table id="expenseHistoryTable">
+                <thead><tr><th>Data/Hora</th><th>Descrição</th><th>Valor</th><th>Ações</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div style="margin-top:20px; text-align: right;">
+            <button class="btn ghost" type="button" onclick="closeExpenseHistoryModal()">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<div id="imageNoteContainer" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1001; display:none; justify-content:center; align-items:center;">
+    <div class="card" style="width:350px; padding:0; box-shadow:none; border:none;">
+        <div id="noteContentToImage" style="background:#ffffff; padding:20px; border-radius:10px; font-family:'Inter', sans-serif;">
+            <div style="text-align:center; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:10px;">
+                <h3 style="margin:0; color:var(--dark);" id="noteBrandName">WAP VUPT</h3>
+                <p style="margin:0; font-size:10px; color:var(--muted);">ORÇAMENTO/NOTA (NÃO FISCAL)</p>
+            </div>
+            <div id="noteClientDetails" style="font-size:12px; margin-bottom:10px;"></div>
+            <div id="noteItemsList" style="margin-bottom:15px;"></div>
+            <div style="border-top:2px solid #333; padding-top:10px; text-align:right;">
+                <div style="font-size:18px; font-weight:800; color:var(--accent);">TOTAL A PAGAR: <span id="noteFinalValue"></span></div>
+            </div>
+            <p style="text-align:center; font-size:10px; color:var(--muted); margin-top:15px;">
+                Obrigado pela preferência!
+            </p>
+        </div>
+        <div style="padding:10px; background:var(--dark); border-bottom-left-radius:10px; border-bottom-right-radius:10px; text-align:center;">
+            <button class="btn btn-sm" onclick="downloadImageNote()" style="background:#28a745; margin-right:5px;"><i class="fa-solid fa-download"></i> Baixar PNG</button>
+            <button class="btn ghost btn-sm" onclick="$('imageNoteContainer').style.display='none'" style="color:#fff; border-color:#fff;"><i class="fa-solid fa-xmark"></i> Fechar</button>
+        </div>
+    </div>
+</div>
+
 <script>
 /* ============================ DATA & DEFAULTS ============================ */
-const KEY = 'wap_vupt_app_v3_8'
+const KEY = 'wap_vupt_app_v3_9' // VERSÃO ATUALIZADA
 const DEFAULT = {
   brand: {name:'Wap Vupt', logo:''},
   adminPass: '1234',
@@ -532,6 +522,7 @@ const DEFAULT = {
     {id:idGen(), name:'Moto Pequena - Lavagem', category:'moto', isAdd:false, price:5.00, time:25},
     {id:idGen(), name:'Moto Grande - Lavagem', category:'moto', isAdd:false, price:7.00, time:25},
     {id:idGen(), name:'Carro - Lavagem + Pretinho', category:'carro', isAdd:false, price:15.00, time:30},
+    {id:idGen(), name:'Estofado - Sofá 2 Lugares', category:'outros', isAdd:false, price:50.00, time:120}, // NOVO
     {id:idGen(), name:'Moto - Hidratação', category:'moto', isAdd:true, price:5.00, time:10},
     {id:idGen(), name:'Moto - Cera', category:'moto', isAdd:true, price:5.00, time:5},
     {id:idGen(), name:'Moto - Verniz', category:'moto', isAdd:true, price:10.00, time:15},
@@ -549,7 +540,12 @@ function idGen(){ return 'id'+Math.random().toString(36).slice(2,9) }
 function load(){ 
   try{ 
     const loadedData = JSON.parse(localStorage.getItem(KEY));
-    return loadedData ? {...JSON.parse(JSON.stringify(DEFAULT)), ...loadedData} : JSON.parse(JSON.stringify(DEFAULT));
+    // Adaptação: Garante que 'outros' exista nos serviços se a versão anterior foi carregada
+    let finalData = loadedData ? {...JSON.parse(JSON.stringify(DEFAULT)), ...loadedData} : JSON.parse(JSON.stringify(DEFAULT));
+    if (!finalData.services.some(s => s.category === 'outros')) {
+         finalData.services.push({id:idGen(), name:'Estofado - Sofá 2 Lugares', category:'outros', isAdd:false, price:50.00, time:120});
+    }
+    return finalData;
   }catch{ 
     return JSON.parse(JSON.stringify(DEFAULT)) 
   } 
@@ -565,7 +561,41 @@ function yesterdayStr(){ const d=new Date(); d.setDate(d.getDate()-1); return d.
 function parseTimeToMins(t){ if(!t) return 0; const [h,m]=t.split(':').map(Number); return h*60+m }
 function addMinsToTime(t,mins){ const total=parseTimeToMins(t)+mins; const totalMins = ((total%1440)+1440)%1440; const hh=Math.floor(totalMins/60); const mm=totalMins%60; return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}` }
 function formatDateBR(dateStr){ const [y,m,d] = dateStr.split('-'); return `${d}/${m}/${y}` }
+// Função applyDiscount simplificada, não será usada para o valor final editável
 function applyDiscount(value, percent){ percent = Number(percent) || 0; if(percent <= 0) return Number(value); return Number((value * (1 - (percent/100))).toFixed(2)); }
+
+// Função isTimeSlotOccupied
+function isTimeSlotOccupied(newStartTime, durationMinutes, date, excludeId = null) {
+    if (!newStartTime || !durationMinutes || durationMinutes <= 0 || !date) return false;
+
+    const newStartMins = parseTimeToMins(newStartTime);
+    const newEndMins = newStartMins + durationMinutes;
+
+    // Filtra agendamentos na mesma data e exclui o próprio agendamento (se estiver editando)
+    const existingSchedules = DATA.schedules.filter(s => 
+        s.date === date && 
+        s.id !== excludeId &&
+        s.time // Garante que tem hora de início
+    );
+
+    for (const s of existingSchedules) {
+        const existingStartMins = parseTimeToMins(s.time);
+        const existingEndMins = existingStartMins + s.tempo;
+
+        // Verifica sobreposição de horários
+        // O novo começa durante o existente OU O novo termina durante o existente
+        const overlap = (
+            (newStartMins < existingEndMins && newEndMins > existingStartMins)
+        );
+
+        if (overlap) {
+            alert(`🚫 Conflito de horário! O agendamento de ${s.name} está marcado das ${s.time}h às ${addMinsToTime(s.time, s.tempo)}h. Escolha outro horário.`);
+            return true;
+        }
+    }
+    return false;
+}
+
 
 /* ============================ NAVIGATION ============================ */
 function nav(btn){
@@ -575,7 +605,7 @@ function nav(btn){
   if (view === 'admin') {
     const pass = prompt('🔐 Senha administrativa:'); 
     if(pass === DATA.adminPass){
-      ['today','new','past-service','calendar','history','admin'].forEach(v=> $('view-'+v).style.display='none')
+      ['today','new','calendar','history','admin'].forEach(v=> $('view-'+v).style.display='none')
       $('view-admin').style.display='block'
       loadAdmin()
     } else { 
@@ -586,18 +616,22 @@ function nav(btn){
       return;
     }
   } else {
-    ['today','new','past-service','calendar','history','admin'].forEach(v=> $('view-'+v).style.display='none')
+    ['today','new','calendar','history','admin'].forEach(v=> $('view-'+v).style.display='none')
     $('view-'+view).style.display='block'
     if(view==='today') loadToday()
-    if(view==='new'){ renderServiceOptions(); updateTimeDetails(); $('clientHistoryContainer').style.display='none'; $('clientHistoryList').innerHTML=''; $('inputDate').value = todayStr(); }
-    if(view==='past-service'){ $('inputPastDate').value = yesterdayStr(); renderPastServiceOptions(); updatePastDateWarning(); updatePastTimeDetails(); $('formPastService').reset(); }
+    if(view==='new') resetNewForm() // Usa função unificada de reset
     if(view==='calendar'){ $('calendarDate').value = todayStr(); showDate() }
     if(view==='history') loadHistory()
   }
 }
 
 /* ============================ BRAND & CLOCK ============================ */
-function renderBrand(){ $('titleApp').innerText = DATA.brand.name || 'Wap Vupt'; $('titleApp').title = DATA.brand.name || 'Wap Vupt'; if(DATA.brand.logo){ $('sideLogo').src = DATA.brand.logo; $('sideLogo').style.display='block' } else { $('sideLogo').style.display='none' } }
+function renderBrand(){ 
+  $('titleApp').innerText = DATA.brand.name || 'Wap Vupt'; 
+  $('titleApp').title = DATA.brand.name || 'Wap Vupt'; 
+  $('noteBrandName').innerText = DATA.brand.name.toUpperCase() || 'WAP VUPT'; // Para o modal PNG
+  if(DATA.brand.logo){ $('sideLogo').src = DATA.brand.logo; $('sideLogo').style.display='block' } else { $('sideLogo').style.display='none' } 
+}
 function updateClock(){ $('clock').innerText = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) }
 setInterval(updateClock,1000);
 
@@ -655,8 +689,8 @@ function refreshAll(){
   $('collectedToday').innerText = money(collectedToday)
   loadToday()
   renderServicesTable()
-  renderEntriesAndExpenses()
-  if($('view-admin').style.display === 'block') { renderMonthlySummary(); }
+  renderEntriesAndExpenses() // NOVO: Renderiza a lista de despesas em Admin
+  if($('view-admin').style.display === 'block') { renderMonthlySummary(); renderFullExpenseHistory(); }
   if($('view-history').style.display === 'block') { loadHistory(); }
 }
 
@@ -671,7 +705,7 @@ function loadToday(){
   const tbody = $('tableToday').querySelector('tbody'); tbody.innerHTML = ''
   schedulesToday.forEach((s, i) => {
     const service = DATA.services.find(svc => svc.id === s.serviceId) || {name: 'Serviço excluído', price: s.valor, time: s.tempo}
-    const endTime = addMinsToTime(s.time, s.tempo);
+    const endTime = s.time ? addMinsToTime(s.time, s.tempo) : '--:--';
     const row = tbody.insertRow()
     row.insertCell().innerText = i + 1
     const clientCell = row.insertCell()
@@ -688,19 +722,30 @@ function loadToday(){
     // se tiver desconto, mostra também (ex: R$ 45,00 (10% off))
     let displayValor = money(s.valor);
     if (s.discountPercent && Number(s.discountPercent) > 0) {
-        displayValor = `${money(s.valor)} (${s.discountPercent}% off)`;
+        displayValor = `${money(s.valor)} <span style="font-size:10px;color:var(--muted)">(${s.discountPercent}% off)</span>`;
     }
-    row.insertCell().innerText = serviceText
-    const timeCell = row.insertCell(); timeCell.innerHTML = `<strong>${s.time}</strong> / <span style="color:var(--info)">${endTime}</span>`
+    row.insertCell().innerHTML = serviceText
+    const timeCell = row.insertCell(); timeCell.innerHTML = `<strong>${s.time || '--:--'}</strong> / <span style="color:var(--info)">${endTime}</span>`
     row.insertCell().innerHTML = `<strong>${displayValor}</strong>`
     const statusCell = row.insertCell(); statusCell.className = s.paid ? 'paid' : 'not-paid'; statusCell.innerText = s.paid ? 'Pago' : 'Pendente'
     const actionCell = row.insertCell(); actionCell.className = 'actions'
+    
+    // Botões de Ações
     if(!s.paid){
       const payBtn = document.createElement('button'); payBtn.className = 'btn btn-sm'; payBtn.innerHTML = '<i class="fa-solid fa-hand-holding-dollar"></i> Pagar'; payBtn.onclick = () => confirmPayment(s.id); actionCell.appendChild(payBtn)
     } else {
       const printBtn = document.createElement('button'); printBtn.className = 'btn ghost btn-sm'; printBtn.innerHTML = '<i class="fa-solid fa-receipt"></i> Nota'; printBtn.onclick = () => printNonFiscalNote(s); actionCell.appendChild(printBtn)
     }
     const cancelBtn = document.createElement('button'); cancelBtn.className = 'btn ghost btn-sm'; cancelBtn.style.color = 'var(--danger)'; cancelBtn.style.borderColor = 'var(--danger)'; cancelBtn.innerHTML = '<i class="fa-solid fa-times"></i>'; cancelBtn.onclick = () => cancelSchedule(s.id); actionCell.appendChild(cancelBtn)
+    
+    // NOVO: Coluna Nota/Orçamento
+    const noteCell = row.insertCell(); noteCell.className = 'actions';
+    const noteBtn = document.createElement('button'); 
+    noteBtn.className = 'btn ghost btn-sm'; 
+    noteBtn.innerHTML = '<i class="fa-solid fa-file-invoice-dollar"></i> Nota/Orçamento'; 
+    // AGORA CHAMA A FUNÇÃO QUE ABRE O MODAL PARA GERAR O PNG
+    noteBtn.onclick = () => printCustomerQuote(s); 
+    noteCell.appendChild(noteBtn)
   })
 }
 
@@ -733,17 +778,17 @@ function editScheduleService(scheduleId) {
     
     // Preenche campos simples
     $('editClientNameInput').value = schedule.name;
-    $('editVehicle').value = schedule.vehicle || 'moto'; // Garante um valor padrão
+    $('editVehicle').value = schedule.vehicle || 'moto'; 
     $('editDate').value = schedule.date;
-    $('editTime').value = schedule.time;
-    $('editDiscount').value = schedule.discountPercent || '';
+    $('editTime').value = schedule.time || '';
+    $('editValor').value = schedule.valor.toFixed(2); // Valor FINAL editável
 
     // Renderiza serviços e adicionais
     renderEditServiceOptions(schedule.vehicle, schedule.serviceId, schedule.adds || []);
     
     // Define a duração no campo de input, forçando o update com base nele
     $('editTempoInput').value = schedule.tempo;
-    updateEditServiceDetails(true); // Força a atualização de valor e previsão baseada no TEMPO
+    updateEditServiceDetails(true); 
 
     $('editServiceModal').style.display = 'flex';
 }
@@ -751,25 +796,18 @@ function editScheduleService(scheduleId) {
 function updateEditServiceDetails(fromTempoInput = false) {
     const serviceId = $('editService').value;
     const adds = Array.from(document.querySelectorAll('#editAdds input[type="checkbox"]:checked')).map(cb => cb.value);
-    const discount = Number($('editDiscount').value) || 0;
     const startTime = $('editTime').value;
 
     let details = getServicePriceAndDuration(serviceId, adds);
     let totalTime = details.tempo;
 
-    if (fromTempoInput) {
-        // Se a atualização veio do campo Tempo (duração)
-        totalTime = Number($('editTempoInput').value) || 0;
-        // O valor base é o valor calculado do serviço, mesmo se o tempo for alterado manualmente
-        const final = applyDiscount(details.valor, discount);
-        $('editValor').value = money(final);
-        $('editTempoInput').value = totalTime;
+    if (!fromTempoInput) {
+        // Se a atualização veio do Serviço ou Adicional, atualiza a SUGESTÃO de valor e o campo TEMPO
+        $('editTempoInput').value = totalTime; 
+        $('editValor').value = details.valor.toFixed(2); // Sugere o valor BASE sem desconto
     } else {
-        // Se a atualização veio do Serviço, Adicional ou Desconto
-        // O tempo é baseado na soma dos serviços
-        const final = applyDiscount(details.valor, discount);
-        $('editValor').value = money(final);
-        $('editTempoInput').value = totalTime; // Atualiza o campo de duração para refletir o serviço
+        // Se a atualização veio do campo Tempo (duração), apenas atualiza o tempo total
+        totalTime = Number($('editTempoInput').value) || 0;
     }
     
     if (startTime && totalTime > 0) {
@@ -793,15 +831,18 @@ function saveScheduleEdit(e) {
     const newTime = $('editTime').value;
     const newServiceId = $('editService').value;
     const newAdds = Array.from(document.querySelectorAll('#editAdds input[type="checkbox"]:checked')).map(cb => cb.value);
-    const newDiscount = Number($('editDiscount').value) || 0;
-    const newTempo = Number($('editTempoInput').value) || 0; // Pega o tempo do input (pode ser manual)
-    
-    // Recalcula o valor base (apenas serviços e adicionais) para aplicar o desconto
-    const baseDetails = getServicePriceAndDuration(newServiceId, newAdds);
-    const newValor = applyDiscount(baseDetails.valor, newDiscount);
+    const newTempo = Number($('editTempoInput').value) || 0; 
+    const newValor = Number($('editValor').value) || 0; // Valor FINAL EDITADO
 
-    // Validação de horário
-    if (isTimeSlotOccupied(newTime, newTempo, newDate, scheduleId)) { return; }
+    if (newValor <= 0) { alert('O valor do serviço deve ser maior que zero.'); return; }
+    
+    // Recalcula o desconto percentual apenas para referência/visualização na tabela
+    const baseDetails = getServicePriceAndDuration(newServiceId, newAdds);
+    const baseValor = baseDetails.valor;
+    const newDiscount = baseValor > 0 ? (1 - (newValor / baseValor)) * 100 : 0;
+
+    // Validação de horário (somente para agendamentos futuros/atuais)
+    if (newDate >= todayStr() && isTimeSlotOccupied(newTime, newTempo, newDate, scheduleId)) { return; }
 
     // Atualiza o objeto
     schedule.name = newName;
@@ -811,7 +852,7 @@ function saveScheduleEdit(e) {
     schedule.serviceId = newServiceId;
     schedule.adds = newAdds;
     schedule.tempo = newTempo;
-    schedule.discountPercent = newDiscount;
+    schedule.discountPercent = Math.round(newDiscount * 100) / 100; // Salva o desconto arredondado
     schedule.valor = newValor;
 
     // Se já estava pago, atualiza a entrada no caixa com o novo valor
@@ -840,6 +881,7 @@ function confirmPayment(scheduleId){
     DATA.entries.push({ id: idGen(), label: `Agendamento - ${schedule.name} (${formatDateBR(schedule.date)})`, value: schedule.valor, time: paymentDateISO, scheduleId: scheduleId })
     save()
     alert('Pagamento confirmado e registrado no caixa!')
+    // AGORA CHAMA A FUNÇÃO DE IMPRESSÃO SIMPLES, JÁ QUE FOI PAGO
     if(confirm('Deseja imprimir a nota não fiscal agora?')){ printNonFiscalNote(schedule); }
   }
 }
@@ -850,6 +892,7 @@ function togglePaymentStatus(scheduleId){
         if(confirm(`Tem certeza que deseja marcar o serviço de ${schedule.name} como PENDENTE (Estornar ${money(schedule.valor)} do caixa)?`)){
             DATA.entries = DATA.entries.filter(e => e.scheduleId !== scheduleId);
             schedule.paid = false;
+            schedule.paidAt = null; // Limpa a data de pagamento
             save();
             alert(`Status alterado para PENDENTE. Valor estornado do caixa.`);
         }
@@ -858,6 +901,7 @@ function togglePaymentStatus(scheduleId){
             const paymentDateISO = new Date().toISOString();
             DATA.entries.push({ id: idGen(), label: `Agendamento - ${schedule.name} (${formatDateBR(schedule.date)})`, value: schedule.valor, time: paymentDateISO, scheduleId: scheduleId });
             schedule.paid = true;
+            schedule.paidAt = paymentDateISO; // Adiciona data de pagamento
             save();
             alert(`Status alterado para PAGO. Valor adicionado ao caixa.`);
         }
@@ -879,11 +923,87 @@ function cancelSchedule(id) {
     }
 }
 
-/* ============================ PRINT NOTE ============================ */
-function printNonFiscalNote(schedule){
+/* ============================ PRINT NOTE & QUOTE (PNG ENABLED) ============================ */
+function downloadImageNote() {
+    const element = $('noteContentToImage');
+    const clientName = $('noteClientDetails').querySelector('strong').innerText.replace(/\s/g, '_').substring(0, 20);
+    const dateStr = todayStr().replace(/-/g, '');
+    
+    // Usa html2canvas para capturar o div como uma imagem
+    html2canvas(element, { 
+        backgroundColor: '#ffffff',
+        scale: 2 // Escala maior para melhor qualidade em telas de alta resolução
+    }).then(canvas => {
+        // Converte o canvas para uma imagem PNG
+        const imgData = canvas.toDataURL('image/png');
+        
+        // Cria um link para download
+        const a = document.createElement('a');
+        a.href = imgData;
+        a.download = `nota_apagar_${clientName}_${dateStr}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+        alert('Imagem PNG da Nota/Orçamento baixada!');
+    }).catch(error => {
+        console.error('Erro ao gerar PNG:', error);
+        alert('Erro ao gerar a imagem da nota. Tente novamente ou use a impressão/copia.');
+    });
+}
+
+function printCustomerQuote(schedule) {
+    // Esta função agora PREENCHE o modal de imagem
     const service = DATA.services.find(svc => svc.id === schedule.serviceId) || {name: 'Serviço', price: 0}
     const itemsHtml = [];
-    // main service
+    // Calcula o valor base
+    const baseValor = (DATA.services.find(s=>s.id===schedule.serviceId)?.price || 0) + (schedule.adds||[]).reduce((acc,id)=> acc + ((DATA.services.find(s=>s.id===id)?.price)||0),0);
+    const descontoAplicado = baseValor - schedule.valor;
+
+    // 1. Serviço Principal
+    itemsHtml.push(`<div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; margin-bottom:3px;">
+                        <span>${service.name}</span>
+                        <span>${money(service.price)}</span>
+                    </div>`);
+
+    // 2. Adicionais
+    if(schedule.adds && schedule.adds.length){
+        schedule.adds.forEach(addId => {
+            const addSvc = DATA.services.find(s => s.id === addId);
+            if (addSvc) {
+                itemsHtml.push(`<div style="display:flex; justify-content:space-between; font-size:11px; margin-left:10px; color:var(--muted);">
+                                    <span>+ ${addSvc.name}</span>
+                                    <span>${money(addSvc.price)}</span>
+                                </div>`);
+            }
+        });
+    }
+
+    // 3. Desconto
+    if (descontoAplicado > 0) {
+        itemsHtml.push(`<div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; color:var(--danger); margin-top:5px; border-top:1px dashed #ccc; padding-top:5px;">
+                            <span>Desconto (${Math.round(schedule.discountPercent || 0)}%)</span>
+                            <span>- ${money(descontoAplicado)}</span>
+                        </div>`);
+    }
+
+    // Preenche o modal
+    $('noteClientDetails').innerHTML = `
+        <p style="margin:0;">Cliente: <strong>${schedule.name}</strong></p>
+        <p style="margin:0;">Agendado: ${formatDateBR(schedule.date)} ${schedule.time ? `às ${schedule.time}` : ''} (${schedule.tempo} min)</p>
+        <p style="margin:0; font-weight:700; color:var(--info);">Total Base: ${money(baseValor)}</p>
+    `;
+    $('noteItemsList').innerHTML = itemsHtml.join('');
+    $('noteFinalValue').innerText = money(schedule.valor);
+    
+    // Exibe o modal
+    $('imageNoteContainer').style.display = 'flex';
+}
+
+function printNonFiscalNote(schedule){
+    // Função de impressão simples (texto) para notas pagas (botão Nota/Pago)
+    const service = DATA.services.find(svc => svc.id === schedule.serviceId) || {name: 'Serviço', price: 0}
+    const itemsHtml = [];
     const mainPrice = (DATA.services.find(s => s.id === schedule.serviceId)?.price) || 0;
     itemsHtml.push(`<div class="item"><span>- ${service.name}</span><span class="value">${money(mainPrice)}</span></div>`);
     if(schedule.adds && schedule.adds.length){
@@ -892,12 +1012,9 @@ function printNonFiscalNote(schedule){
         itemsHtml.push(`<div class="item" style="margin-left:10px;"><span style="font-size:9pt;">+ ${addSvc?.name || 'Adicional'}</span><span style="font-size:9pt;">${money(addSvc?.price || 0)}</span></div>`);
       });
     }
-    // summary
-    // Calcula o valor total SEM desconto
     const valorBase = (DATA.services.find(s=>s.id===schedule.serviceId)?.price || 0) + (schedule.adds||[]).reduce((acc,id)=> acc + ((DATA.services.find(s=>s.id===id)?.price)||0),0);
     const descontoAplicado = valorBase - schedule.valor;
-
-    const discountLine = schedule.discountPercent && Number(schedule.discountPercent) > 0 ? `<div class="item"><span>Desconto (${schedule.discountPercent}%)</span><span class="value">- ${money(descontoAplicado)}</span></div>` : '';
+    const discountLine = descontoAplicado > 0 ? `<div class="item"><span>Desconto (${Math.round(schedule.discountPercent)}%)</span><span class="value">- ${money(descontoAplicado)}</span></div>` : '';
     const noteContent = `
         <style>
             @media print {
@@ -917,7 +1034,7 @@ function printNonFiscalNote(schedule){
             </div>
             <div class="separator"></div>
             <p style="margin:2px 0;">CLIENTE: ${schedule.name}</p>
-            <p style="margin:2px 0;">VEÍCULO: ${schedule.vehicle ? schedule.vehicle.toUpperCase() : ''}</p>
+            <p style="margin:2px 0;">TIPO: ${schedule.vehicle ? schedule.vehicle.toUpperCase() : ''}</p>
             <div class="separator"></div>
             <p style="margin:5px 0 0;">DESCRIÇÃO DOS SERVIÇOS:</p>
             ${itemsHtml.join('')}
@@ -930,7 +1047,7 @@ function printNonFiscalNote(schedule){
             <div class="separator"></div>
             <div class="footer">
                 <p style="margin:0;font-size:8pt;">OBRIGADO PELA PREFERÊNCIA!</p>
-                <p style="margin:0;font-size:8pt;">Agendado para: ${formatDateBR(schedule.date)} às ${schedule.time}</p>
+                <p style="margin:0;font-size:8pt;">Serviço em: ${formatDateBR(schedule.date)} às ${schedule.time || '--:--'}</p>
             </div>
         </div>
     `;
@@ -940,7 +1057,7 @@ function printNonFiscalNote(schedule){
     printWindow.print();
 }
 
-/* ============================ NEW & PAST (SERVIÇOS E DESCONTO) ============================ */
+/* ============================ NEW (SERVIÇOS E VALOR EDITÁVEL) ============================ */
 function getServicePriceAndDuration(serviceId, adds=[]){
   const mainService = DATA.services.find(s => s.id === serviceId)
   let totalValue = mainService ? mainService.price : 0
@@ -962,83 +1079,20 @@ function renderServiceOptions(selectedVehicle = null, selectedServiceId = null, 
   inputAdds.innerHTML = addServices.map(s => `<label class="small" style="display:flex;align-items:center;gap:5px;"><input type="checkbox" name="add-on" value="${s.id}" data-price="${s.price}" onchange="updateTimeDetails()" ${selectedAdds.includes(s.id) ? 'checked' : ''}>${s.name} (${money(s.price)})</label>`).join('')
 }
 
-function renderPastServiceOptions(selectedVehicle = null, selectedServiceId = null, selectedAdds = []){
-  const vehicle = selectedVehicle || $('inputPastVehicle').value
-  const mainServices = DATA.services.filter(s => s.isAdd===false && (s.category === vehicle || s.category === 'both'))
-  const addServices = DATA.services.filter(s => s.isAdd===true && (s.category === vehicle || s.category === 'both'))
-  const selectService = $('inputPastService')
-  selectService.innerHTML = mainServices.map(s => `<option value="${s.id}" data-price="${s.price}" data-time="${s.time}" ${s.id === selectedServiceId ? 'selected' : ''}>${s.name} (${money(s.price)})</option>`).join('')
-  const inputAdds = $('inputPastAdds')
-  inputAdds.innerHTML = addServices.map(s => `<label class="small" style="display:flex;align-items:center;gap:5px;"><input type="checkbox" name="past-add-on" value="${s.id}" data-price="${s.price}" onchange="updatePastTimeDetails()" ${selectedAdds.includes(s.id) ? 'checked' : ''}>${s.name} (${money(s.price)})</label>`).join('')
-}
-
-function updatePastTimeDetails(){
-    const serviceId = $('inputPastService').value;
-    const adds = Array.from(document.querySelectorAll('#inputPastAdds input[type="checkbox"]:checked')).map(cb => cb.value);
-    const startTime = $('inputPastTime').value;
-    const details = getServicePriceAndDuration(serviceId, adds);
-    const totalTime = details.tempo;
-    const discount = Number($('inputPastDiscount').value) || 0;
-    const finalValue = applyDiscount(details.valor, discount);
-    $('inputPastTotalWithDiscount').value = money(finalValue);
-    if (totalTime > 0) {
-        if(startTime){
-            const endTime = addMinsToTime(startTime, totalTime);
-            $('pastEndTime').value = `${endTime} (${totalTime} min)`;
-        } else {
-            $('pastEndTime').value = `Total: ${totalTime} min`;
-        }
-    } else {
-        $('pastEndTime').value = `0 min`;
-    }
-}
-
 /* NOVO: Mostra um alerta se a data do serviço passado for anterior à de hoje. */
 function updatePastDateWarning() {
-    const pastDate = $('inputPastDate').value; const today = todayStr(); const warning = $('pastDateWarning');
-    if (pastDate < today) { warning.style.display = 'flex'; } else { warning.style.display = 'none'; }
-}
-
-/* Cria serviço no passado: POR PADRÃO fica PENDENTE, mas há checkbox para marcar pago */
-function createPastSchedule(e){
-    e.preventDefault()
-    const name = $('inputPastName').value
-    const vehicle = $('inputPastVehicle').value
-    const serviceId = $('inputPastService').value
-    const date = $('inputPastDate').value
-    const time = $('inputPastTime').value || '00:00';
-    const adds = Array.from(document.querySelectorAll('#inputPastAdds input[type="checkbox"]:checked')).map(cb => cb.value)
-    const markPaid = $('inputPastMarkPaid').checked
-    const discount = Number($('inputPastDiscount').value) || 0
-    if(!serviceId){ alert('Selecione um serviço principal.'); return }
-    const serviceDetails = getServicePriceAndDuration(serviceId, adds)
-    const finalValue = applyDiscount(serviceDetails.valor, discount)
-    const newSchedule = {
-      id: idGen(),
-      name, vehicle, serviceId, adds, date, time,
-      valor: finalValue,
-      tempo: serviceDetails.tempo,
-      discountPercent: discount || 0,
-      paid: markPaid ? true : false,
-      createdAt: new Date().toISOString()
+    const date = $('inputDate').value; const today = todayStr(); const warning = $('pastDateWarning');
+    const paymentOption = $('paymentOptionContainer');
+    if (date < today) { 
+        warning.style.display = 'flex'; 
+        paymentOption.style.display = 'flex';
+    } else { 
+        warning.style.display = 'none'; 
+        // Esconde a opção de pagamento se for agendamento futuro
+        if (date > today) { paymentOption.style.display = 'none'; }
+        // Mostra a opção de pagamento se for agendamento para HOJE
+        else { paymentOption.style.display = 'flex'; }
     }
-    DATA.schedules.push(newSchedule)
-    if(markPaid){
-        // Usa a data do agendamento para a entrada no caixa
-        const paymentDateISO = date + new Date().toISOString().slice(10); 
-        DATA.entries.push({ id: idGen(), label: `Serviço Realizado (Histórico) - ${name} (${formatDateBR(date)})`, value: newSchedule.valor, time: paymentDateISO, scheduleId: newSchedule.id })
-    }
-    save()
-    if(markPaid){
-      alert(`✅ Serviço Histórico de ${name} (em ${formatDateBR(date)}) registrado e valor de ${money(newSchedule.valor)} adicionado ao caixa do dia ${formatDateBR(date)}!`)
-    } else {
-      alert(`✅ Serviço Histórico de ${name} (em ${formatDateBR(date)}) registrado como PENDENTE. Marque como pago quando efetuar o recebimento.`)
-    }
-    $('formPastService').reset()
-    $('inputPastDate').value = yesterdayStr();
-    renderPastServiceOptions()
-    updatePastDateWarning()
-    updatePastTimeDetails()
 }
 
 /* Carrega histórico rápido do cliente (novo agendamento) */
@@ -1051,7 +1105,7 @@ function loadClientHistory(clientName) {
     list.innerHTML = schedules.map(s => {
         const service = DATA.services.find(svc => svc.id === s.serviceId) || { name: 'Serviço Excluído' };
         const addsCount = s.adds ? s.adds.length : 0; const addsText = addsCount > 0 ? ` +${addsCount} adicional${addsCount > 1 ? 's' : ''}` : '';
-        return `<div class="client-history-item" onclick="fillFormFromHistory('${s.id}')"><div class="service-name">${service.name}${addsText}</div><div class="details"><span>${formatDateBR(s.date)}</span><span>${s.time}</span><span style="color:var(--accent);">${money(s.valor)}</span></div></div>`;
+        return `<div class="client-history-item" onclick="fillFormFromHistory('${s.id}')"><div class="service-name">${service.name}${addsText}</div><div class="details"><span>${formatDateBR(s.date)}</span><span>${s.time || '--:--'}</span><span style="color:var(--accent);">${money(s.valor)}</span></div></div>`;
     }).join('');
     container.style.display = 'block';
 }
@@ -1059,59 +1113,91 @@ function loadClientHistory(clientName) {
 /* Preenche forms com histórico */
 function fillFormFromHistory(scheduleId) {
     const s = DATA.schedules.find(s => s.id === scheduleId); if (!s) return;
-    const currentView = document.querySelector('aside .nav-btn.active').dataset.view;
-    let inputNameEl, inputVehicleEl, renderFunc, updateFunc;
-    if (currentView === 'new') { inputNameEl = $('inputName'); inputVehicleEl = $('inputVehicle'); renderFunc = renderServiceOptions; updateFunc = updateTimeDetails; }
-    else if (currentView === 'past-service') { inputNameEl = $('inputPastName'); inputVehicleEl = $('inputPastVehicle'); renderFunc = renderPastServiceOptions; updateFunc = updatePastTimeDetails; $('inputPastDate').value = todayStr(); $('inputPastTime').value = ''; updatePastDateWarning(); }
-    else { return; }
-    inputNameEl.value = s.name; inputVehicleEl.value = s.vehicle; renderFunc(s.vehicle, s.serviceId, s.adds); if(currentView==='new') { $('inputDiscount').value = s.discountPercent || ''; } else { $('inputPastDiscount').value = s.discountPercent || ''; }
-    updateFunc(); alert(`📋 Campos de Serviço e Veículo preenchidos com base no agendamento de ${formatDateBR(s.date)}.`);
+    $('inputName').value = s.name; 
+    $('inputVehicle').value = s.vehicle; 
+    renderServiceOptions(s.vehicle, s.serviceId, s.adds); 
+    $('inputDiscount').value = s.discountPercent || ''; // Apenas sugestão
+    // Não preenche data e hora automaticamente para forçar o usuário a escolher
+    updateTimeDetails(); alert(`📋 Campos de Serviço e Tipo preenchidos com base no agendamento de ${formatDateBR(s.date)}.`);
 }
 
-/* Atualiza previsão e calcula valor com desconto no form Novo */
+/* Atualiza previsão e calcula valor com desconto no form Novo (agora sugestão) */
 function updateTimeDetails(){
     const serviceId = $('inputService').value; const adds = Array.from(document.querySelectorAll('#inputAdds input[type="checkbox"]:checked')).map(cb => cb.value); const startTime = $('inputTime').value;
     const details = getServicePriceAndDuration(serviceId, adds); const totalTime = details.tempo;
     const discount = Number($('inputDiscount').value) || 0; const finalValue = applyDiscount(details.valor, discount);
-    $('inputTotalWithDiscount').value = money(finalValue);
-    if (startTime && totalTime > 0) { const endTime = addMinsToTime(startTime, totalTime); $('endTime').value = `${endTime} (${totalTime} min)`; } else { $('endTime').value = `--:-- (0 min)`; }
+    
+    // Sugere o valor final (editável)
+    $('inputTotalWithDiscount').value = finalValue.toFixed(2);
+    
+    if (startTime && totalTime > 0) { const endTime = addMinsToTime(startTime, totalTime); $('endTime').value = `${endTime} (${totalTime} min)`; } else { $('endTime').value = `--:-- (${totalTime} min)`; }
+    
+    updatePastDateWarning(); // Verifica se é passado/presente/futuro
 }
 
-/* Verifica sobreposição de horário */
-function isTimeSlotOccupied(newStartTime, durationMins, newDate, excludeId = null){
-    if(!newStartTime || durationMins <= 0) return false;
-    const newStartTimeMins = parseTimeToMins(newStartTime); const newEndTimeMins = newStartTimeMins + durationMins;
-    const existingSchedules = DATA.schedules.filter(s => s.date === newDate && s.id !== excludeId);
-    for(const s of existingSchedules){
-        const existingStartTimeMins = parseTimeToMins(s.time); const existingEndTimeMins = existingStartTimeMins + s.tempo;
-        const startsDuring = newStartTimeMins >= existingStartTimeMins && newStartTimeMins < existingEndTimeMins;
-        const endsDuring = newEndTimeMins > existingStartTimeMins && newEndTimeMins <= existingEndTimeMins;
-        const encompasses = newStartTimeMins <= existingStartTimeMins && newEndTimeMins >= existingEndTimeMins;
-        const engulfed = existingStartTimeMins <= newStartTimeMins && existingEndTimeMins >= newEndTimeMins;
-        if(startsDuring || endsDuring || encompasses || engulfed){
-            const newFinalTime = addMinsToTime(newStartTime, durationMins);
-            const existingEndTime = addMinsToTime(s.time, s.tempo);
-            alert(`🚫 ERRO: O horário das ${newStartTime}h às ${newFinalTime}h se sobrepõe ao agendamento de ${s.name} (das ${s.time}h às ${existingEndTime}h).`);
-            return true;
-        }
-    }
-    return false;
+function resetNewForm() {
+    $('formNew').reset(); 
+    $('inputDate').value = todayStr();
+    $('inputVehicle').value = 'moto';
+    renderServiceOptions(); 
+    updateTimeDetails(); 
+    $('clientHistoryContainer').style.display='none'; 
+    $('clientHistoryList').innerHTML=''; 
+    updatePastDateWarning();
 }
 
-/* Cria novo agendamento (desconto aplicado ao total serviço+adicionais) */
+
+/* Cria novo agendamento (Valor total é o EDITADO) */
 function createSchedule(e){
   e.preventDefault()
-  const name = $('inputName').value; const vehicle = $('inputVehicle').value; const serviceId = $('inputService').value; const date = $('inputDate').value; const time = $('inputTime').value; const adds = Array.from(document.querySelectorAll('#inputAdds input[type="checkbox"]:checked')).map(cb => cb.value)
+  const name = $('inputName').value; const vehicle = $('inputVehicle').value; const serviceId = $('inputService').value; const date = $('inputDate').value; const time = $('inputTime').value || '00:00'; const adds = Array.from(document.querySelectorAll('#inputAdds input[type="checkbox"]:checked')).map(cb => cb.value)
+  const finalValue = Number($('inputTotalWithDiscount').value) || 0; // VALOR FINAL EDITÁVEL
+  const markPaid = $('inputMarkPaid').checked;
+
   if(!serviceId){ alert('Selecione um serviço principal.'); return }
+  if(finalValue <= 0){ alert('O valor final deve ser maior que zero.'); return }
+  
   const serviceDetails = getServicePriceAndDuration(serviceId, adds)
-  if (isTimeSlotOccupied(time, serviceDetails.tempo, date)) { return; }
-  const discount = Number($('inputDiscount').value) || 0
-  const finalValue = applyDiscount(serviceDetails.valor, discount)
-  const newSchedule = { id: idGen(), name, vehicle, serviceId, adds, date, time, valor: finalValue, tempo: serviceDetails.tempo, discountPercent: discount || 0, paid: false, createdAt: new Date().toISOString() }
-  DATA.schedules.push(newSchedule); save()
-  alert(`Agendamento para ${name} em ${formatDateBR(date)} às ${time} confirmado! Previsão de saída: ${addMinsToTime(time, serviceDetails.tempo)}. Total: ${money(newSchedule.valor)}`)
-  $('formNew').reset(); renderServiceOptions(); updateTimeDetails(); $('clientHistoryContainer').style.display = 'none'; $('clientHistoryList').innerHTML = '';
+  const totalTime = serviceDetails.tempo;
+  
+  // Calcula o desconto percentual baseado no valor editado, para referência
+  const baseValor = serviceDetails.valor;
+  const discountPercent = baseValor > 0 ? (1 - (finalValue / baseValor)) * 100 : 0;
+  
+  // Validação de horário: SOMENTE para agendamentos na data atual ou futura
+  if (date >= todayStr() && isTimeSlotOccupied(time, totalTime, date)) { 
+    // isTimeSlotOccupied já mostra o alerta
+    return; 
+  }
+
+  const newSchedule = { 
+    id: idGen(), name, vehicle, serviceId, adds, date, time, 
+    valor: finalValue, 
+    tempo: totalTime, 
+    discountPercent: Math.round(discountPercent * 100) / 100, // Salva o desconto arredondado
+    paid: markPaid, 
+    createdAt: new Date().toISOString() 
+  }
+  
+  DATA.schedules.push(newSchedule); 
+  
+  if(markPaid){
+      // Usa a data/hora atual para o registro
+      const paymentDateISO = new Date().toISOString(); 
+      DATA.entries.push({ id: idGen(), label: `Agendamento - ${name} (${formatDateBR(date)})`, value: newSchedule.valor, time: paymentDateISO, scheduleId: newSchedule.id })
+  }
+  
+  save()
+  
+  const msg = date < todayStr() 
+    ? `✅ Serviço Histórico de ${name} (em ${formatDateBR(date)}) registrado. Valor: ${money(newSchedule.valor)}. Status: ${markPaid ? 'PAGO' : 'PENDENTE'}.`
+    : `Agendamento para ${name} em ${formatDateBR(date)} às ${time} confirmado! Previsão de saída: ${addMinsToTime(time, totalTime)}. Total: ${money(newSchedule.valor)}.`;
+  
+  alert(msg)
+  
+  resetNewForm();
 }
+
 
 /* ============================ CALENDAR VIEW ============================ */
 function showDate(){
@@ -1120,15 +1206,25 @@ function showDate(){
   const tbody = $('tableCalendar').querySelector('tbody'); tbody.innerHTML = ''
   schedulesDate.forEach((s, i) => {
     const service = DATA.services.find(svc => svc.id === s.serviceId) || {name: 'Serviço excluído'}
-    const endTime = addMinsToTime(s.time, s.tempo);
+    const endTime = s.time ? addMinsToTime(s.time, s.tempo) : '--:--';
     const row = tbody.insertRow(); row.insertCell().innerText = formatDateBR(s.date); row.insertCell().innerText = s.name
     // mostra serviço + adicionais
     let serviceText = service.name; if (s.adds && s.adds.length>0){ const addsNames=s.adds.map(id=> (DATA.services.find(x=>x.id===id)?.name)||'Adicional'); serviceText += ' + ' + addsNames.join(' + '); }
     row.insertCell().innerText = serviceText
-    const timeCell = row.insertCell(); timeCell.innerHTML = `<strong>${s.time}</strong> / <span style="color:var(--info)">${endTime}</span>`
+    const timeCell = row.insertCell(); timeCell.innerHTML = `<strong>${s.time || '--:--'}</strong> / <span style="color:var(--info)">${endTime}</span>`
     row.insertCell().innerText = money(s.valor)
     const statusCell = row.insertCell(); statusCell.className = s.paid ? 'paid' : 'not-paid'; statusCell.innerText = s.paid ? 'Pago' : 'Pendente'
-    const actionCell = row.insertCell(); const cancelBtn = document.createElement('button'); cancelBtn.className = 'btn ghost btn-sm'; cancelBtn.style.color = 'var(--danger)'; cancelBtn.style.borderColor = 'var(--danger)'; cancelBtn.innerHTML = '<i class="fa-solid fa-times"></i> Cancelar'; cancelBtn.onclick = () => cancelSchedule(s.id); actionCell.appendChild(cancelBtn)
+    const actionCell = row.insertCell(); actionCell.className = 'actions'
+    
+    const cancelBtn = document.createElement('button'); cancelBtn.className = 'btn ghost btn-sm'; cancelBtn.style.color = 'var(--danger)'; cancelBtn.style.borderColor = 'var(--danger)'; cancelBtn.innerHTML = '<i class="fa-solid fa-times"></i> Cancelar'; cancelBtn.onclick = () => cancelSchedule(s.id); actionCell.appendChild(cancelBtn)
+    
+    // NOVO: Coluna Nota/Orçamento na tela Agenda
+    const noteCell = row.insertCell(); noteCell.className = 'actions';
+    const noteBtn = document.createElement('button'); 
+    noteBtn.className = 'btn ghost btn-sm'; 
+    noteBtn.innerHTML = '<i class="fa-solid fa-file-invoice-dollar"></i> Nota/Orçamento'; 
+    noteBtn.onclick = () => printCustomerQuote(s); 
+    noteCell.appendChild(noteBtn)
   })
 }
 
@@ -1146,7 +1242,7 @@ function loadHistory(){
   const tbody = $('tableHistoryBody'); tbody.innerHTML = ''
   sortedSchedules.forEach((s) => {
     const service = DATA.services.find(svc => svc.id === s.serviceId) || {name: 'Serviço excluído', price: s.valor, time: s.tempo}
-    const endTime = addMinsToTime(s.time, s.tempo);
+    const endTime = s.time ? addMinsToTime(s.time, s.tempo) : '--:--';
     const row = tbody.insertRow()
     row.insertCell().innerText = formatDateBR(s.date)
     row.insertCell().innerHTML = `<span class="client-name-clickable" onclick="promptAdminPasswordForEdit('${s.id}')">${s.name}</span>`
@@ -1156,13 +1252,13 @@ function loadHistory(){
         serviceText += ' + ' + addsNames.join(' + ');
     }
     row.insertCell().innerText = serviceText
-    const timeCell = row.insertCell(); timeCell.innerHTML = `<strong>${s.time}</strong> / <span style="color:var(--info)">${endTime}</span>`
+    const timeCell = row.insertCell(); timeCell.innerHTML = `<strong>${s.time || '--:--'}</strong> / <span style="color:var(--info)">${endTime}</span>`
     row.insertCell().innerText = `${s.tempo} min`
     row.insertCell().innerText = money(s.valor)
     const statusCell = row.insertCell(); statusCell.className = s.paid ? 'paid' : 'not-paid'; statusCell.innerText = s.paid ? 'Pago' : 'Pendente'
     const actionCell = row.insertCell(); actionCell.className = 'actions'
     
-    // NOVO: Toggle de status de pagamento
+    // Toggle de status de pagamento
     const toggleBtn = document.createElement('button');
     toggleBtn.className = 'btn btn-sm';
     toggleBtn.style.backgroundColor = s.paid ? 'var(--danger)' : 'var(--success)';
@@ -1196,8 +1292,143 @@ function loadAdmin(){
   $('dailyEntries').innerText = money(todayBalance.entries)
   $('dailyExpenses').innerText = money(todayBalance.expenses)
   $('dailyBalance').innerText = money(todayBalance.balance)
-  renderMonthlySummary(); renderServicesTable(); renderEntriesAndExpenses()
+  renderMonthlySummary(); renderServicesTable(); renderEntriesAndExpenses(); renderFullExpenseHistory();
 }
+
+// ... Funções de Admin (renderMonthlySummary, setInitialCash, saveConfig, resetConfig, clearAllData) ...
+
+/* ============================ MOVIMENTOS (ENTRADAS/SAÍDAS) ============================ */
+function renderEntriesAndExpenses(){
+  const listEntries = $('listEntries'); 
+  listEntries.innerHTML = DATA.entries.sort((a,b) => b.time.localeCompare(a.time)).slice(0, 10).map(e => `<div class="small" style="display:flex;justify-content:space-between;border-bottom:1px dashed #eee;padding:4px 0;"><span>${e.label.substring(0, 30)}...</span><span style="color:var(--success);font-weight:700;">+${money(e.value)}</span></div>`).join('')
+}
+
+function addExpense(){ 
+  const desc = $('expDesc').value.trim(); const value = Number($('expValue').value); 
+  if(!desc || isNaN(value) || value <= 0){ alert('Descreva a despesa e informe um valor válido.'); return } 
+  DATA.expenses.push({ id: idGen(), label: `Despesa - ${desc}`, value: value, time: new Date().toISOString() }); 
+  save(); 
+  $('expDesc').value = $('expValue').value = ''; 
+  alert('Despesa registrada.') 
+}
+
+/* NOVO: HISTÓRICO COMPLETO DE DESPESAS (EDITÁVEL) */
+function promptAdminPasswordForExpenseHistory() {
+    const pass = prompt(`🔐 Digite a Senha Administrativa para ver/editar o Histórico de Despesas:`); 
+    if(pass === DATA.adminPass){ renderFullExpenseHistory(); openExpenseHistoryModal(); } else if (pass !== null) { alert('🚫 Senha incorreta! Acesso não autorizado.'); }
+}
+
+function openExpenseHistoryModal() {
+    $('expenseHistoryModal').style.display = 'flex';
+}
+function closeExpenseHistoryModal() {
+    $('expenseHistoryModal').style.display = 'none';
+    // Re-renderiza o resumo após o fechamento, caso haja edições
+    renderEntriesAndExpenses(); 
+    refreshAll(); 
+}
+
+function renderFullExpenseHistory() {
+    const tbody = $('expenseHistoryTable').querySelector('tbody'); tbody.innerHTML = '';
+    const sortedExpenses = DATA.expenses.sort((a, b) => b.time.localeCompare(a.time));
+
+    sortedExpenses.forEach(e => {
+        const row = tbody.insertRow();
+        row.id = `exp-${e.id}`;
+        const dateCell = row.insertCell(); dateCell.innerText = formatDateBR(e.time.substring(0, 10)) + ' ' + e.time.substring(11, 16);
+        const descCell = row.insertCell(); descCell.innerText = e.label.replace('Despesa - ', '');
+        const valueCell = row.insertCell(); valueCell.innerText = money(e.value); valueCell.style.color = 'var(--danger)';
+        const actionCell = row.insertCell(); actionCell.className = 'actions';
+
+        // Botão Editar
+        const editBtn = document.createElement('button');
+        editBtn.className = 'btn ghost btn-sm';
+        editBtn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
+        editBtn.onclick = () => enableExpenseEdit(e.id, row, descCell, valueCell);
+        actionCell.appendChild(editBtn);
+
+        // Botão Apagar
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn ghost btn-sm';
+        deleteBtn.style.color = 'var(--danger)';
+        deleteBtn.style.borderColor = 'var(--danger)';
+        deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+        deleteBtn.onclick = () => deleteExpense(e.id);
+        actionCell.appendChild(deleteBtn);
+    });
+}
+
+function enableExpenseEdit(id, row, descCell, valueCell) {
+    if (row.classList.contains('edit-mode')) return;
+    row.classList.add('edit-mode'); 
+
+    const expense = DATA.expenses.find(exp => exp.id === id); if (!expense) return;
+
+    // Edição da Descrição
+    const descInput = document.createElement('input'); descInput.type = 'text'; descInput.value = expense.label.replace('Despesa - ', '');
+    descCell.innerHTML = ''; descCell.appendChild(descInput);
+
+    // Edição do Valor
+    const valueInput = document.createElement('input'); valueInput.type = 'number'; valueInput.step = '0.01'; valueInput.min = '0'; valueInput.value = expense.value.toFixed(2);
+    valueCell.innerHTML = ''; valueCell.appendChild(valueInput);
+
+    const actionCell = row.cells[3]; actionCell.innerHTML = '';
+    
+    // Botão Salvar
+    const saveBtn = document.createElement('button'); saveBtn.className = 'btn btn-sm'; saveBtn.innerHTML = '<i class="fa-solid fa-save"></i>'; 
+    saveBtn.onclick = () => saveExpenseEdit(id, descInput.value, valueInput.value); actionCell.appendChild(saveBtn);
+    
+    // Botão Cancelar
+    const cancelBtn = document.createElement('button'); cancelBtn.className = 'btn ghost btn-sm'; cancelBtn.innerHTML = '<i class="fa-solid fa-times"></i>'; 
+    cancelBtn.onclick = () => renderFullExpenseHistory(); actionCell.appendChild(cancelBtn);
+
+    descInput.focus();
+}
+
+function saveExpenseEdit(id, newDesc, newValue) {
+    const expense = DATA.expenses.find(exp => exp.id === id); if (!expense) return;
+    const value = Number(newValue);
+    if (!newDesc.trim() || isNaN(value) || value <= 0) {
+        alert('Descrição e valor da despesa devem ser válidos.');
+        renderFullExpenseHistory();
+        return;
+    }
+    expense.label = `Despesa - ${newDesc.trim()}`;
+    expense.value = value;
+    save();
+    renderFullExpenseHistory();
+    alert('Despesa atualizada com sucesso.');
+}
+
+function deleteExpense(id) {
+    if(confirm('Tem certeza que deseja APAGAR esta despesa?')){
+        DATA.expenses = DATA.expenses.filter(e => e.id !== id);
+        save();
+        renderFullExpenseHistory();
+        alert('Despesa apagada com sucesso.');
+    }
+}
+
+/* ============================ INICIALIZAÇÃO ============================ */
+document.addEventListener('DOMContentLoaded', () => {
+    renderBrand(); updateClock(); refreshAll();
+    $('calendarDate').value = todayStr(); 
+    $('inputDate').value = todayStr();
+    renderServiceOptions(); 
+    updateTimeDetails(); // Garante o cálculo inicial
+    updatePastDateWarning(); // Garante a exibição correta do aviso/opção de pagamento
+
+    document.querySelectorAll('#inputService, #inputTime, #inputDate, #inputDiscount, #inputVehicle').forEach(el => el.addEventListener('change', updateTimeDetails));
+    document.querySelectorAll('#inputAdds').forEach(el => el.addEventListener('change', updateTimeDetails));
+    
+    // Adiciona listener para recalcular desconto quando o Valor Total é editado manualmente
+    $('inputTotalWithDiscount').addEventListener('input', () => {
+        // Apenas para fins visuais, se o usuário mexer no valor final, o desconto sugerido não é mais relevante.
+    });
+    
+});
+
+/* ================== Funções do HTML que não foram alteradas mas são necessárias ================== */
 function renderMonthlySummary() {
   const summary = calculateMonthlySummary(); const tbody = $('monthlySummaryTable').querySelector('tbody'); tbody.innerHTML = ''; const today = new Date(); $('monthlyLabel').innerText = today.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
   let totalEntradas = 0; let totalSaidas = 0;
@@ -1219,17 +1450,17 @@ function setInitialCash(){ const newCash = Number($('initialCash').value); if(is
 function saveConfig(){ DATA.brand.name = $('brandNameInput').value; const newPass = $('adminPassInput').value; if(newPass){ DATA.adminPass = newPass } const logoFile = $('logoFile').files[0]; if(logoFile){ const reader = new FileReader(); reader.onload = function(e){ DATA.brand.logo = e.target.result; save(); alert('Configurações salvas (incluindo logo e/ou senha).') }; reader.readAsDataURL(logoFile) } else { save(); alert('Configurações salvas (exceto logo e/ou senha).') } }
 function resetConfig(){ if(confirm('Tem certeza que deseja apagar TODOS os dados (agendamentos, caixa, serviços)? Esta ação é irreversível!')){ localStorage.removeItem(KEY); DATA = JSON.parse(JSON.stringify(DEFAULT)); save(); alert('Todos os dados foram resetados.'); location.reload() } }
 function clearAllData(keepSchedules = false){ let message = 'ATENÇÃO: Deseja zerar todo o fluxo de caixa (Saldo Inicial, Entradas e Despesas)?'; if (keepSchedules) { message += '\n\nOs AGENDAMENTOS serão MANTIDOS (mas terão o status de PENDENTE para o novo ciclo de caixa).'; } else { message += '\n\nOs AGENDAMENTOS também serão APAGADOS.' } if(confirm(message)){ DATA.initialCash = 0; DATA.entries = []; DATA.expenses = []; if(!keepSchedules){ DATA.schedules = []; } else { DATA.schedules.forEach(s => s.paid = false); } save(); alert('Fluxo de caixa zerado com sucesso!'); loadAdmin(); } }
-
-/* ======================= GESTÃO DE SERVIÇOS (COM EDIÇÃO) ======================= */
+function clearToday(){ if(confirm('Tem certeza que deseja limpar a lista de agendamentos de HOJE? Somente agendamentos de hoje serão removidos.')){ const today = todayStr(); DATA.schedules = DATA.schedules.filter(s => s.date !== today); save(); alert('Agendamentos de hoje limpos.') } }
 function renderServicesTable(){ const tbody = $('servicesTable').querySelector('tbody'); tbody.innerHTML = ''; DATA.services.forEach(s => { const row = tbody.insertRow(); row.id = `svc-${s.id}`; const nameCell = row.insertCell(); nameCell.innerText = s.name; nameCell.onclick = () => enableEdit(row, s.id, 'name', nameCell, 'text', s.name)
-  const catCell = row.insertCell(); catCell.innerText = s.category === 'moto' ? 'Moto' : s.category === 'carro' ? 'Carro' : 'Ambos'; catCell.onclick = () => enableEdit(row, s.id, 'category', catCell, 'select', s.category, [{value:'both', text:'Ambos'}, {value:'moto', text:'Moto'}, {value:'carro', text:'Carro'}])
+  const catCell = row.insertCell(); catCell.innerText = s.category === 'moto' ? 'Moto' : s.category === 'carro' ? 'Carro' : s.category === 'outros' ? 'Outros' : 'Ambos'; 
+  const catOptions = [{value:'both', text:'Ambos'}, {value:'moto', text:'Moto'}, {value:'carro', text:'Carro'}, {value:'outros', text:'Outros'}];
+  catCell.onclick = () => enableEdit(row, s.id, 'category', catCell, 'select', s.category, catOptions)
   const isAddCell = row.insertCell(); isAddCell.innerText = s.isAdd ? 'Adicional' : 'Principal'; isAddCell.onclick = () => enableEdit(row, s.id, 'isAdd', isAddCell, 'select', s.isAdd.toString(), [{value:'false', text:'Principal'}, {value:'true', text:'Adicional'}])
   const priceCell = row.insertCell(); priceCell.innerText = money(s.price); priceCell.onclick = () => enableEdit(row, s.id, 'price', priceCell, 'number', s.price.toFixed(2), null, '0.01')
   const timeCell = row.insertCell(); timeCell.innerText = `${s.time} min`; timeCell.onclick = () => enableEdit(row, s.id, 'time', timeCell, 'number', s.time)
   const actionCell = row.insertCell(); actionCell.className = 'actions'
   const delBtn = document.createElement('button'); delBtn.className = 'btn ghost btn-sm'; delBtn.style.color = 'var(--danger)'; delBtn.style.borderColor = 'var(--danger)'; delBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Apagar'; delBtn.onclick = () => deleteService(s.id); actionCell.appendChild(delBtn)
 }) }
-
 function enableEdit(row, id, field, cell, type, currentValue, options = null, step = '1') {
     if (row.classList.contains('edit-mode')) return;
     row.classList.add('edit-mode'); cell.innerHTML = '';
@@ -1251,8 +1482,9 @@ function saveEdit(id, field, newValue, row) {
     if(field === 'price' || field === 'time'){ 
         DATA.schedules.filter(s => s.serviceId === id && !s.paid).forEach(s => { 
             const details = getServicePriceAndDuration(s.serviceId, s.adds); 
-            // Recalcula o valor com o desconto já existente (para manter a coerência)
-            s.valor = applyDiscount(details.valor, s.discountPercent || 0); 
+            // Recalcula o valor baseado no novo valor base, mantendo o desconto percentual
+            const newValor = applyDiscount(details.valor, s.discountPercent || 0); 
+            s.valor = newValor;
             s.tempo = details.tempo; 
         }); 
     }
@@ -1263,27 +1495,10 @@ function addService(){ const name = $('svcName').value.trim(); const category = 
 
 function deleteService(id){ const today = todayStr(); const futureSchedules = DATA.schedules.filter(s => s.serviceId === id && s.date >= today); let confirmationMessage = 'Tem certeza que deseja excluir este serviço? '; if (futureSchedules.length > 0) { confirmationMessage += `\n\nATENÇÃO: Existem ${futureSchedules.length} agendamentos futuros usando este serviço! Excluir pode comprometer o histórico.`; } else { confirmationMessage += 'Esta ação é irreversível.' } if(confirm(confirmationMessage)){ DATA.services = DATA.services.filter(s => s.id !== id); save(); alert('Serviço excluído.') } }
 
-/* ============================ MOVIMENTOS (ENTRADAS/SAÍDAS) ============================ */
-function renderEntriesAndExpenses(){
-  const listEntries = $('listEntries'); const listExpenses = $('listExpenses');
-  listEntries.innerHTML = DATA.entries.sort((a,b) => b.time.localeCompare(a.time)).slice(0, 10).map(e => `<div class="small" style="display:flex;justify-content:space-between;border-bottom:1px dashed #eee;padding:4px 0;"><span>${e.label.substring(0, 30)}...</span><span style="color:var(--success);font-weight:700;">+${money(e.value)}</span></div>`).join('')
-  listExpenses.innerHTML = DATA.expenses.sort((a,b) => b.time.localeCompare(a.time)).slice(0, 10).map(e => `<div class="small" style="display:flex;justify-content:space-between;border-bottom:1px dashed #eee;padding:4px 0;"><span>${e.label.substring(0, 30)}...</span><span style="color:var(--danger);font-weight:700;">-${money(e.value)}</span></div>`).join('')
-}
-function addExpense(){ const desc = $('expDesc').value.trim(); const value = Number($('expValue').value); if(!desc || isNaN(value) || value <= 0){ alert('Descreva a despesa e informe um valor válido.'); return } DATA.expenses.push({ id: idGen(), label: `Despesa - ${desc}`, value: value, time: new Date().toISOString() }); save(); $('expDesc').value = $('expValue').value = ''; alert('Despesa registrada.') }
-
-/* ============================ EXPORT / BACKUP / PRINT TODAY ============================ */
 function downloadJson(){ const dataStr = JSON.stringify(DATA, null, 2); const blob = new Blob([dataStr], {type: 'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `wap_vupt_backup_${todayStr()}.json`; a.click(); URL.revokeObjectURL(url); alert('Backup (JSON) baixado. Guarde em um local seguro.') }
 function exportData(){ let csvContent = 'Data;Cliente;Servico;Valor;Pago;Data_Completa\n'; DATA.schedules.forEach(s => { const service = DATA.services.find(svc => svc.id === s.serviceId) || {name: 'Serviço Excluido'}; csvContent += `${formatDateBR(s.date)};${s.name};"${service.name}";${s.valor.toFixed(2).replace('.',',')};${s.paid ? 'Sim' : 'Não'};${s.createdAt}\n` }); const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `wap_vupt_export_${todayStr()}.csv`; a.click(); URL.revokeObjectURL(url); alert('Dados exportados (CSV) com sucesso.') }
 function printToday(){ const content = document.querySelector('#tableToday').outerHTML; const today = todayStr(); const printWindow = window.open('', '_blank', 'width=800,height=600'); printWindow.document.write(`<html><head><title>Agenda ${formatDateBR(today)}</title><style>table{width:100%;border-collapse:collapse;margin-top:20px}th,td{padding:8px;border:1px solid #ccc;text-align:left;font-size:12px}th{background:#f0f0f0}.paid{color:green} .not-paid{color:red}</style></head><body><h2>Agenda de Agendamentos - ${formatDateBR(today)}</h2>${content}</body></html>`); printWindow.document.close(); printWindow.print(); }
 
-/* ============================ INICIALIZAÇÃO ============================ */
-document.addEventListener('DOMContentLoaded', () => {
-    renderBrand(); updateClock(); refreshAll();
-    $('calendarDate').value = todayStr(); $('inputDate').value = todayStr();
-    renderServiceOptions(); renderPastServiceOptions();
-    document.querySelectorAll('#inputService, #inputTime, #inputDate, #inputDiscount').forEach(el => el.addEventListener('change', updateTimeDetails));
-    document.querySelectorAll('#inputPastService, #inputPastTime, #inputPastDate, #inputPastDiscount').forEach(el => el.addEventListener('change', () => { updatePastTimeDetails(); updatePastDateWarning(); }));
-});
 </script>
 </body>
 </html>
