@@ -65,7 +65,7 @@ button.ghost:hover{background:var(--line)}
 footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
 
 .finance-grid-main { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-.finance-stat-card { padding: 20px; border-radius: 10px; background: var(--panel); box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 5px solid; }
+.finance-stat-card { padding: 20px; border-radius: 10px; background: var(--panel); border-left: 5px solid; }
 .finance-stat-card.in { border-left-color: var(--success); } .finance-stat-card.out { border-left-color: var(--danger); } .finance-stat-card.bal { border-left-color: var(--info); }
 .finance-stat-card .label { font-size: 14px; color: var(--muted); margin-bottom: 5px; } .finance-stat-card .value { font-size: 28px; font-weight: 800; color: var(--dark); }
 .daily-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; background: #f0f4f8; border-radius: 8px; border: 1px solid var(--line); margin-bottom: 20px; }
@@ -564,7 +564,7 @@ function formatDateBR(dateStr){ const [y,m,d] = dateStr.split('-'); return `${d}
 // Função applyDiscount simplificada, não será usada para o valor final editável
 function applyDiscount(value, percent){ percent = Number(percent) || 0; if(percent <= 0) return Number(value); return Number((value * (1 - (percent/100))).toFixed(2)); }
 
-// Função isTimeSlotOccupied
+// Função isTimeSlotOccupied - CORRIGIDA (garantida no código completo)
 function isTimeSlotOccupied(newStartTime, durationMinutes, date, excludeId = null) {
     if (!newStartTime || !durationMinutes || durationMinutes <= 0 || !date) return false;
 
