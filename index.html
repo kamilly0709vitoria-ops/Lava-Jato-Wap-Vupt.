@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">  
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <style>  
   /* DESIGN SOFISTICADO E MODERNO */  
   :root{  
@@ -90,13 +91,48 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
 
 .past-date-alert { margin-top: 10px; padding: 8px; border-radius: 6px; background-color: var(--warning-bg); color: var(--warning-text); font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 8px; border: 1px solid #ffeeba; }
 
-@media (max-width:880px){ aside{width:60px} .brand h1{font-size:20px} .finance-grid-main, .daily-summary { grid-template-columns: 1fr; } }
+/* Estilo para sugestão de nomes */
+.autocomplete-container { position: relative; }
+.autocomplete-list { position: absolute; z-index: 10; width: 100%; max-height: 150px; overflow-y: auto; background: var(--panel); border: 1px solid var(--line); border-top: none; border-radius: 0 0 8px 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+.autocomplete-item { padding: 8px 12px; cursor: pointer; font-size: 14px; }
+.autocomplete-item:hover { background: #f0f4f8; }
 
-/* Estilo para a lista de despesas em Admin */
-.expense-item { display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed #eee; padding:4px 0; font-size: 12px; }
-.expense-item span { flex:1; }
-.expense-item .actions { gap: 4px; }
-.expense-item.edit-mode { background-color: #f7f9fc; padding: 4px; border-radius: 4px; }
+/* Estilo para formas de pagamento no novo agendamento */
+.payment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+
+/* NOVO: Estilo para o cabeçalho da nota (Logo + Info) */
+.note-header-v5 { 
+    display: flex; 
+    align-items: center; 
+    justify-content: flex-start; /* Alinhado à esquerda como solicitado */
+    border-bottom: 1px solid #eee; 
+    padding-bottom: 10px; 
+    margin-bottom: 10px;
+}
+.note-header-v5 img {
+    width: 60px; /* Tamanho da logo na nota */
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 10px;
+}
+.note-header-v5 .info {
+    text-align: left;
+}
+.note-header-v5 h3 { 
+    margin: 0; 
+    color: var(--dark);
+    font-size: 16px;
+}
+.note-header-v5 p { 
+    margin: 0; 
+    font-size: 10px; 
+    color: var(--muted);
+    font-weight: 700;
+}
+
+
+@media (max-width:880px){ aside{width:60px} .brand h1{font-size:20px} .finance-grid-main, .daily-summary { grid-template-columns: 1fr; } }
 
 </style>
 
@@ -111,13 +147,13 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
     <button class="nav-btn" data-view="history" title="Histórico" onclick="nav(this)"><i class="fa-solid fa-list-ul"></i><div style="font-size:11px">Histórico</div></button>  
     <button class="nav-btn" data-view="admin" title="Admin" onclick="nav(this)"><i class="fa-solid fa-gauge-high"></i><div style="font-size:11px">Admin</div></button>  
     <div style="flex:1"></div>  
-    <div style="font-size:10px;color:#bbb">Wap Vupt </div>  
+    <div style="font-size:10px;color:#bbb">Wap Vupt v5.0</div>  
   </aside>    
   <main>  
     <header class="top">  
       <div class="brand">  
         <h1 id="titleApp">Wap Vupt </h1>  
-        <div class="subtitle muted">Agendamentos • Caixa • Controle</div>  
+        <div class="subtitle muted">Agendamentos • Caixa • Controle • <span id="headerNoteLabel">Nota/Orçamento</span></div>  
       </div>  
       <div class="controls">  
         <div class="small muted" id="clock">--:--</div>  
@@ -159,16 +195,18 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
   <h3>Novo Agendamento / Registro de Serviço</h3>  
   <form id="formNew" onsubmit="createSchedule(event)">  
     <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:15px">  
-      <div>  
+      <div class="autocomplete-container">  
         <label class="muted small">Nome do cliente</label>  
-        <input type="text" id="inputName" required oninput="loadClientHistory(this.value)">  
+        <input type="text" id="inputName" required oninput="loadClientHistory(this.value); showNameSuggestions(this.value)">  
+        <div id="nameSuggestions" class="autocomplete-list" style="display:none;"></div>
       </div>  
       <div>  
         <label class="muted small">Tipo de Serviço</label>  
         <select id="inputVehicle" onchange="renderServiceOptions(); updateTimeDetails();">  
           <option value="moto">Moto</option>  
           <option value="carro">Carro</option>  
-          <option value="outros">Estofado / Outros</option>  </select>  
+          <option value="outros">Estofado / Outros</option>  
+        </select>  
       </div>  
       <div>  
         <label class="muted small">Data do Serviço/Agendamento</label>  
@@ -206,7 +244,7 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
 
     <div style="margin-top:12px; display:flex; gap:10px; align-items:center;">  
       <div style="flex:1">  
-        <label class="muted small">Desconto (%) <span class="small muted">(Apenas informativo. Calcule o valor final manualmente.)</span></label>  
+        <label class="muted small">Desconto (%) <span class="small muted">(Apenas informativo.)</span></label>  
         <input type="number" id="inputDiscount" min="0" max="100" placeholder="Ex: 10" onchange="updateTimeDetails()">  
       </div>  
       <div style="width:260px">  
@@ -215,9 +253,25 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
       </div>  
     </div>  
     
-    <div id="paymentOptionContainer" style="margin-top:12px; display:flex; align-items:center; gap:8px;">  
-        <input type="checkbox" id="inputMarkPaid">  
+    <div id="paymentOptionContainer" style="margin-top:12px;">  
+        <input type="checkbox" id="inputMarkPaid" onchange="togglePaymentDetails(this.checked)">  
         <label for="inputMarkPaid" class="small muted">Marcar como <strong>Pago</strong> ao registrar (serviço concluído/histórico)</label>  
+
+        <div id="paymentDetails" class="payment-grid" style="display:none;">
+            <div>
+                <label class="muted small">Forma de Pagamento</label>
+                <select id="inputPaymentMethod" onchange="calculateFinalValueWithFee()">
+                    <option value="dinheiro">Dinheiro</option>
+                    <option value="pix">PIX</option>
+                    <option value="debito">Cartão de Débito</option>
+                    <option value="credito">Cartão de Crédito</option>
+                </select>
+            </div>
+             <div>
+                <label class="muted small">Valor a Entrar no Caixa <i class="fa-solid fa-calculator" title="Valor descontado das taxas."></i></label>
+                <input type="number" id="inputPaidValueWithFee" step="0.01" readonly style="background:#f9f9f9;font-weight:700;color:var(--success);">
+            </div>
+        </div>
     </div>  
 
     <div style="margin-top:20px" class="row">  
@@ -249,27 +303,32 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
 
 <section id="view-history" class="card" style="display:none">  
   <h3>Histórico Completo</h3>  
-  <div class="row" style="margin-bottom:15px">  
-    <div class="col">  
-      <label class="muted small">Pesquisar por Cliente/Serviço</label>  
-      <input type="text" id="historySearchInput" placeholder="Digite o nome do cliente ou serviço" oninput="loadHistory()">  
+  <div id="historyAccess" style="display:none;">
+    <button class="btn" onclick="promptAdminPasswordForHistory()"><i class="fa-solid fa-lock"></i> Desbloquear Histórico</button>
+  </div>
+  <div id="historyContent" style="display:block;">
+    <div class="row" style="margin-bottom:15px">  
+      <div class="col">  
+        <label class="muted small">Pesquisar por Cliente/Serviço</label>  
+        <input type="text" id="historySearchInput" placeholder="Digite o nome do cliente ou serviço" oninput="loadHistory()">  
+      </div>  
+      <div style="width:150px">  
+        <label class="muted small">Status</label>  
+        <select id="historyStatusFilter" onchange="loadHistory()">  
+          <option value="">Todos</option>  
+          <option value="pendente">Pendente</option>  
+          <option value="pago">Pago</option>  
+        </select>  
+      </div>  
     </div>  
-    <div style="width:150px">  
-      <label class="muted small">Status</label>  
-      <select id="historyStatusFilter" onchange="loadHistory()">  
-        <option value="">Todos</option>  
-        <option value="pendente">Pendente</option>  
-        <option value="pago">Pago</option>  
-      </select>  
-    </div>  
-  </div>  
-  <div class="muted small" id="historyCountLabel">Lista dos agendamentos mais recentes (máx. 200).</div>  
-  <div style="margin-top:15px">  
-    <table>  
-      <thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Hora (Início / Saída)</th><th>Tempo</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>  
-      <tbody id="tableHistoryBody"></tbody>  
-    </table>  
-  </div>  
+    <div class="muted small" id="historyCountLabel">Lista dos agendamentos mais recentes (máx. 200).</div>  
+    <div style="margin-top:15px">  
+      <table>  
+        <thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Hora (Início / Saída)</th><th>Tempo</th><th>Valor</th><th>Pagto</th><th>Status</th><th>Ações</th></tr></thead>  
+        <tbody id="tableHistoryBody"></tbody>  
+      </table>  
+    </div>
+  </div>
 </section>  
 
 <section id="view-admin" class="card" style="display:none">  
@@ -278,7 +337,7 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
   <h4 style="margin-top:10px">Resumo Financeiro - Hoje (<span id="adminTodayDate"></span>)</h4>  
   <div class="daily-summary">  
       <div class="daily-stat">  
-          <div class="label">Entradas do Dia</div>  
+          <div class="label">Entradas do Dia (Caixa)</div>  
           <div class="value" id="dailyEntries">R$ 0,00</div>  
       </div>  
       <div class="daily-stat">  
@@ -296,12 +355,12 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
     <div class="finance-stat-card in">  
       <div class="label">Total de Entradas (Receitas)</div>  
       <div class="value" id="dashTotalEntries">R$ 0,00</div>  
-      <div class="detail">Soma de todos os pagamentos de agendamentos.</div>  
+      <div class="detail">Soma de todos os pagamentos (líquido).</div>  
     </div>  
     <div class="finance-stat-card out">  
-      <div class="label">Total de Saídas (Despesas)</div>  
+      <div class="label">Total de Saídas (Despesas + Taxas)</div>  
       <div class="value" id="dashTotalExpenses">R$ 0,00</div>  
-      <div class="detail">Soma de todas as despesas registradas.</div>
+      <div class="detail">Soma de despesas e taxas de cartão.</div>
         </div>
         <div class="finance-stat-card bal">
           <div class="label">Saldo Final (Atual)</div>
@@ -334,7 +393,11 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
           <input type="text" id="brandNameInput">
           <label class="muted small">Logo (opcional)</label>
           <input type="file" id="logoFile" accept="image/*">
-          <label class="muted small">Senha administrativa</label>
+          <div id="logoPreview" style="margin-top: 10px; display: none; padding: 5px; border: 1px dashed var(--line); border-radius: 8px;">
+            <img id="currentLogo" style="max-width: 100px; max-height: 100px; display: block;" alt="Logo Atual">
+            <span class="small muted" style="margin-top: 5px;">Logo atual.</span>
+          </div>
+          <label class="muted small" style="margin-top: 10px;">Senha administrativa</label>
           <input type="text" id="adminPassInput" placeholder="Deixe vazio para não alterar">
           <div style="margin-top:15px" class="row">
             <button class="btn" onclick="saveConfig()"><i class="fa-solid fa-save"></i> Salvar Configurações</button>
@@ -343,7 +406,7 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
         </div>
 
         <div class="card">
-          <h4>Controle de Saldo e Caixa</h4>
+          <h4>Configurações de Fluxo de Caixa / Taxas</h4>
           <div class="row">
             <div class="col">
               <div class="muted small">Saldo de Abertura (Caixa Inicial)</div>
@@ -353,8 +416,14 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
               <button class="btn" onclick="setInitialCash()">Salvar</button>
             </div>
           </div>
-          <div class="muted small" style="margin-top:10px">Use esta função para zerar o saldo total.</div>
-          <button class="btn ghost" style="margin-top:10px" onclick="clearAllData(true)">Zerar Todo o Fluxo de Caixa (Manter Agendamentos)</button>
+          <hr style="margin: 15px 0; border: 0; border-top: 1px dashed var(--line);">
+          <label class="muted small">Taxa Débito (%)</label>
+          <input type="number" id="feeDebito" min="0" max="100" step="0.01" style="margin-bottom: 8px;">
+          <label class="muted small">Taxa Crédito (%)</label>
+          <input type="number" id="feeCredito" min="0" max="100" step="0.01">
+          <div style="margin-top:10px" class="row">
+            <button class="btn" onclick="saveFees()"><i class="fa-solid fa-save"></i> Salvar Taxas</button>
+          </div>
         </div>
       </div>
 
@@ -396,8 +465,8 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
           <div>
             <label class="muted small">Histórico de Despesas (Admin)</label>
             <div id="listExpenses" style="max-height:280px;overflow-y:auto;border:1px solid var(--line);padding:8px;border-radius:8px">
-                </div>
-            <button class="btn ghost btn-sm" style="width:100%; margin-top: 8px;" onclick="promptAdminPasswordForExpenseHistory()"><i class="fa-solid fa-file-invoice-dollar"></i> Ver/Editar Histórico Completo</button>
+            </div>
+            <button class="btn ghost btn-sm" style="width:100%; margin-top: 8px;" onclick="openExpenseHistoryModal()"><i class="fa-solid fa-file-invoice-dollar"></i> Ver/Editar Histórico Completo</button>
           </div>
         </div>
       </div>
@@ -465,7 +534,20 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
               <input type="number" id="editValor" step="0.01" style="background:var(--panel);font-weight:800;color:var(--accent);">
             </div>
             
-            <input type="hidden" id="editDiscount" value="0"> <div style="margin-top:20px" class="row">
+            <input type="hidden" id="editDiscount" value="0"> 
+
+            <div style="margin-top:12px;">
+              <label class="muted small">Status/Forma de Pagamento (Se Pago)</label>
+              <select id="editPaymentMethod">
+                    <option value="dinheiro">Dinheiro</option>
+                    <option value="pix">PIX</option>
+                    <option value="debito">Débito</option>
+                    <option value="credito">Crédito</option>
+                    <option value="pendente">Pendente</option>
+              </select>
+            </div>
+
+            <div style="margin-top:20px" class="row">
                 <button class="btn" type="submit"><i class="fa-solid fa-save"></i> Salvar Edição</button>
                 <button class="btn ghost" type="button" onclick="closeEditModal()">Cancelar</button>
             </div>
@@ -491,14 +573,20 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
 <div id="imageNoteContainer" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1001; display:none; justify-content:center; align-items:center;">
     <div class="card" style="width:350px; padding:0; box-shadow:none; border:none;">
         <div id="noteContentToImage" style="background:#ffffff; padding:20px; border-radius:10px; font-family:'Inter', sans-serif;">
-            <div style="text-align:center; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:10px;">
-                <h3 style="margin:0; color:var(--dark);" id="noteBrandName">WAP VUPT</h3>
-                <p style="margin:0; font-size:10px; color:var(--muted);">ORÇAMENTO/NOTA (NÃO FISCAL)</p>
+            
+            <div class="note-header-v5">
+                <img id="noteLogo" src="" alt="Logo" style="display:none;">
+                <div class="info">
+                    <h3 id="noteBrandName">WAP VUPT</h3>
+                    <p id="noteTypeLabel">ORÇAMENTO/NOTA (NÃO FISCAL)</p>
+                </div>
             </div>
             <div id="noteClientDetails" style="font-size:12px; margin-bottom:10px;"></div>
             <div id="noteItemsList" style="margin-bottom:15px;"></div>
+            
+            <div id="notePaymentInfo" style="font-size:12px; margin-bottom:10px;"></div>
             <div style="border-top:2px solid #333; padding-top:10px; text-align:right;">
-                <div style="font-size:18px; font-weight:800; color:var(--accent);">TOTAL A PAGAR: <span id="noteFinalValue"></span></div>
+                <div style="font-size:18px; font-weight:800; color:var(--accent);">TOTAL: <span id="noteFinalValue"></span></div>
             </div>
             <p style="text-align:center; font-size:10px; color:var(--muted); margin-top:15px;">
                 Obrigado pela preferência!
@@ -506,6 +594,7 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
         </div>
         <div style="padding:10px; background:var(--dark); border-bottom-left-radius:10px; border-bottom-right-radius:10px; text-align:center;">
             <button class="btn btn-sm" onclick="downloadImageNote()" style="background:#28a745; margin-right:5px;"><i class="fa-solid fa-download"></i> Baixar PNG</button>
+            <button class="btn ghost btn-sm" onclick="printThermalNoteWrapper()" style="color:#fff; border-color:#fff; background-color:#1565c0;"><i class="fa-solid fa-print"></i> Imprimir Térmica</button>
             <button class="btn ghost btn-sm" onclick="$('imageNoteContainer').style.display='none'" style="color:#fff; border-color:#fff;"><i class="fa-solid fa-xmark"></i> Fechar</button>
         </div>
     </div>
@@ -513,16 +602,17 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
 
 <script>
 /* ============================ DATA & DEFAULTS ============================ */
-const KEY = 'wap_vupt_app_v3_9' // VERSÃO ATUALIZADA
+const KEY = 'wap_vupt_app_v5_0' // VERSÃO ATUALIZADA
 const DEFAULT = {
   brand: {name:'Wap Vupt', logo:''},
   adminPass: '1234',
   initialCash: 0,
+  fees: {debito: 2.00, credito: 3.50},
   services: [
     {id:idGen(), name:'Moto Pequena - Lavagem', category:'moto', isAdd:false, price:5.00, time:25},
     {id:idGen(), name:'Moto Grande - Lavagem', category:'moto', isAdd:false, price:7.00, time:25},
     {id:idGen(), name:'Carro - Lavagem + Pretinho', category:'carro', isAdd:false, price:15.00, time:30},
-    {id:idGen(), name:'Estofado - Sofá 2 Lugares', category:'outros', isAdd:false, price:50.00, time:120}, // NOVO
+    {id:idGen(), name:'Estofado - Sofá 2 Lugares', category:'outros', isAdd:false, price:50.00, time:120},
     {id:idGen(), name:'Moto - Hidratação', category:'moto', isAdd:true, price:5.00, time:10},
     {id:idGen(), name:'Moto - Cera', category:'moto', isAdd:true, price:5.00, time:5},
     {id:idGen(), name:'Moto - Verniz', category:'moto', isAdd:true, price:10.00, time:15},
@@ -540,10 +630,10 @@ function idGen(){ return 'id'+Math.random().toString(36).slice(2,9) }
 function load(){ 
   try{ 
     const loadedData = JSON.parse(localStorage.getItem(KEY));
-    // Adaptação: Garante que 'outros' exista nos serviços se a versão anterior foi carregada
     let finalData = loadedData ? {...JSON.parse(JSON.stringify(DEFAULT)), ...loadedData} : JSON.parse(JSON.stringify(DEFAULT));
+    if (!finalData.fees) finalData.fees = DEFAULT.fees;
     if (!finalData.services.some(s => s.category === 'outros')) {
-         finalData.services.push({id:idGen(), name:'Estofado - Sofá 2 Lugares', category:'outros', isAdd:false, price:50.00, time:120});
+         finalData.services.push(DEFAULT.services.find(s=>s.category==='outros'));
     }
     return finalData;
   }catch{ 
@@ -557,37 +647,34 @@ function save(){ localStorage.setItem(KEY, JSON.stringify(DATA)); refreshAll() }
 function $(id){ return document.getElementById(id) }
 function money(v){ return 'R$ ' + Number(v||0).toFixed(2).replace('.',',') }
 function todayStr(){ return new Date().toISOString().slice(0,10) }
-function yesterdayStr(){ const d=new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10) }
 function parseTimeToMins(t){ if(!t) return 0; const [h,m]=t.split(':').map(Number); return h*60+m }
 function addMinsToTime(t,mins){ const total=parseTimeToMins(t)+mins; const totalMins = ((total%1440)+1440)%1440; const hh=Math.floor(totalMins/60); const mm=totalMins%60; return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}` }
 function formatDateBR(dateStr){ const [y,m,d] = dateStr.split('-'); return `${d}/${m}/${y}` }
-// Função applyDiscount simplificada, não será usada para o valor final editável
 function applyDiscount(value, percent){ percent = Number(percent) || 0; if(percent <= 0) return Number(value); return Number((value * (1 - (percent/100))).toFixed(2)); }
+function parsePaymentMethod(method) {
+    if (!method) return '';
+    const map = {
+        dinheiro: 'Dinheiro',
+        pix: 'PIX',
+        debito: 'Cartão de Débito',
+        credito: 'Cartão de Crédito',
+        pendente: 'Pendente'
+    };
+    return map[method.toLowerCase()] || method;
+}
 
-// Função isTimeSlotOccupied - CORRIGIDA (garantida no código completo)
+// Função isTimeSlotOccupied (Validação de Conflito)
 function isTimeSlotOccupied(newStartTime, durationMinutes, date, excludeId = null) {
     if (!newStartTime || !durationMinutes || durationMinutes <= 0 || !date) return false;
-
     const newStartMins = parseTimeToMins(newStartTime);
     const newEndMins = newStartMins + durationMinutes;
-
-    // Filtra agendamentos na mesma data e exclui o próprio agendamento (se estiver editando)
     const existingSchedules = DATA.schedules.filter(s => 
-        s.date === date && 
-        s.id !== excludeId &&
-        s.time // Garante que tem hora de início
+        s.date === date && s.id !== excludeId && s.time 
     );
-
     for (const s of existingSchedules) {
         const existingStartMins = parseTimeToMins(s.time);
         const existingEndMins = existingStartMins + s.tempo;
-
-        // Verifica sobreposição de horários
-        // O novo começa durante o existente OU O novo termina durante o existente
-        const overlap = (
-            (newStartMins < existingEndMins && newEndMins > existingStartMins)
-        );
-
+        const overlap = ((newStartMins < existingEndMins && newEndMins > existingStartMins));
         if (overlap) {
             alert(`🚫 Conflito de horário! O agendamento de ${s.name} está marcado das ${s.time}h às ${addMinsToTime(s.time, s.tempo)}h. Escolha outro horário.`);
             return true;
@@ -596,41 +683,88 @@ function isTimeSlotOccupied(newStartTime, durationMinutes, date, excludeId = nul
     return false;
 }
 
+// Aplica taxa de pagamento (Ex: Débito)
+function calculateValueWithFee(value, method) {
+    if (method === 'debito') {
+        const fee = DATA.fees.debito / 100;
+        return Number((value * (1 - fee)).toFixed(2));
+    }
+    if (method === 'credito') {
+        const fee = DATA.fees.credito / 100;
+        return Number((value * (1 - fee)).toFixed(2));
+    }
+    return Number(value);
+}
+
+// Calcula o valor líquido do serviço no form Novo
+function calculateFinalValueWithFee() {
+    const finalValue = Number($('inputTotalWithDiscount').value) || 0;
+    const method = $('inputPaymentMethod').value;
+    const netValue = calculateValueWithFee(finalValue, method);
+    $('inputPaidValueWithFee').value = netValue.toFixed(2);
+}
 
 /* ============================ NAVIGATION ============================ */
 function nav(btn){
   document.querySelectorAll('aside .nav-btn').forEach(b=>b.classList.remove('active'))
   btn.classList.add('active')
   const view = btn.dataset.view
+  let accessGranted = true;
+
   if (view === 'admin') {
     const pass = prompt('🔐 Senha administrativa:'); 
-    if(pass === DATA.adminPass){
-      ['today','new','calendar','history','admin'].forEach(v=> $('view-'+v).style.display='none')
-      $('view-admin').style.display='block'
-      loadAdmin()
-    } else { 
-      alert('🚫 Senha incorreta!'); 
-      document.querySelector('[data-view="today"]').classList.add('active');
-      $('view-today').style.display='block';
-      loadToday();
-      return;
+    if(pass !== DATA.adminPass){ alert('🚫 Senha incorreta!'); accessGranted = false; }
+  } else if (view === 'history') { // Manter a lógica de senha de entrada na tela de histórico
+    const pass = prompt('🔐 Senha administrativa para Histórico:'); 
+    if(pass !== DATA.adminPass){ 
+        alert('🚫 Senha incorreta! Acesso não autorizado.'); 
+        accessGranted = false; 
+    } else {
+        $('historyAccess').style.display = 'none';
+        $('historyContent').style.display = 'block';
     }
-  } else {
+  }
+
+  if(accessGranted){
     ['today','new','calendar','history','admin'].forEach(v=> $('view-'+v).style.display='none')
     $('view-'+view).style.display='block'
     if(view==='today') loadToday()
-    if(view==='new') resetNewForm() // Usa função unificada de reset
+    if(view==='new') resetNewForm() 
     if(view==='calendar'){ $('calendarDate').value = todayStr(); showDate() }
     if(view==='history') loadHistory()
+    if(view==='admin') loadAdmin()
+  } else {
+    document.querySelector('[data-view="today"]').classList.add('active');
+    $('view-today').style.display='block';
+    loadToday();
   }
 }
+
+// Função para desbloquear o histórico (chamada pelo botão, se o usuário estiver na tela de histórico sem senha)
+function promptAdminPasswordForHistory() {
+    nav(document.querySelector('[data-view="history"]'));
+}
+
 
 /* ============================ BRAND & CLOCK ============================ */
 function renderBrand(){ 
   $('titleApp').innerText = DATA.brand.name || 'Wap Vupt'; 
   $('titleApp').title = DATA.brand.name || 'Wap Vupt'; 
-  $('noteBrandName').innerText = DATA.brand.name.toUpperCase() || 'WAP VUPT'; // Para o modal PNG
-  if(DATA.brand.logo){ $('sideLogo').src = DATA.brand.logo; $('sideLogo').style.display='block' } else { $('sideLogo').style.display='none' } 
+  $('noteBrandName').innerText = DATA.brand.name.toUpperCase() || 'WAP VUPT'; 
+  
+  // LOGO
+  if(DATA.brand.logo){ 
+    $('sideLogo').src = DATA.brand.logo; 
+    $('sideLogo').style.display='block';
+    $('noteLogo').src = DATA.brand.logo;
+    $('noteLogo').style.display='block';
+    $('currentLogo').src = DATA.brand.logo;
+    $('logoPreview').style.display = 'block';
+  } else { 
+    $('sideLogo').style.display='none'; 
+    $('noteLogo').style.display='none';
+    $('logoPreview').style.display = 'none';
+  } 
 }
 function updateClock(){ $('clock').innerText = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) }
 setInterval(updateClock,1000);
@@ -640,16 +774,28 @@ function calculateBalance(dateStr = null){
   let entries = DATA.entries;
   let expenses = DATA.expenses;
   let initial = DATA.initialCash;
+  
+  const cardFees = DATA.schedules
+    .filter(s => s.paid && (s.paymentMethod === 'credito' || s.paymentMethod === 'debito'))
+    .reduce((sum, s) => {
+        const netValue = calculateValueWithFee(s.valor, s.paymentMethod);
+        const fee = s.valor - netValue;
+        if (dateStr && s.paidAt && !s.paidAt.startsWith(dateStr)) return sum;
+        return sum + fee;
+    }, 0);
+
   if (dateStr) {
     const dateFilter = (item) => item.time.startsWith(dateStr);
     entries = entries.filter(dateFilter);
     expenses = expenses.filter(dateFilter);
     initial = 0;
   }
+  
   const totalEntries = entries.reduce((sum, e) => sum + e.value, 0)
-  const totalExpenses = expenses.reduce((sum, e) => sum + e.value, 0)
+  const totalExpenses = expenses.reduce((sum, e) => sum + e.value, 0) + cardFees; 
   const currentBalance = initial + totalEntries - totalExpenses
-  return { initial: initial, entries: totalEntries, expenses: totalExpenses, balance: currentBalance }
+  
+  return { initial: initial, entries: totalEntries, expenses: totalExpenses, balance: currentBalance, cardFees: cardFees }
 }
 
 function calculateMonthlySummary() {
@@ -661,13 +807,22 @@ function calculateMonthlySummary() {
   const monthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
   const monthEntries = DATA.entries.filter(e => e.time.startsWith(monthPrefix));
   const monthExpenses = DATA.expenses.filter(e => e.time.startsWith(monthPrefix));
+  
   for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      
       const dayEntries = monthEntries.filter(e => e.time.startsWith(dateStr)).reduce((sum, e) => sum + e.value, 0);
       const dayExpenses = monthExpenses.filter(e => e.time.startsWith(dateStr)).reduce((sum, e) => sum + e.value, 0);
-      const dayBalance = dayEntries - dayExpenses;
-      if (dayEntries > 0 || dayExpenses > 0 || dateStr === todayStr()) {
-        monthlySummary[dateStr] = { dateStr, day, entries: dayEntries, expenses: dayExpenses, balance: dayBalance };
+
+      const dayFees = DATA.schedules
+        .filter(s => s.paid && s.paidAt && s.paidAt.startsWith(dateStr) && (s.paymentMethod === 'credito' || s.paymentMethod === 'debito'))
+        .reduce((sum, s) => sum + (s.valor - calculateValueWithFee(s.valor, s.paymentMethod)), 0);
+
+      const totalDayExpenses = dayExpenses + dayFees;
+      const dayBalance = dayEntries - totalDayExpenses;
+      
+      if (dayEntries > 0 || totalDayExpenses > 0 || dateStr === todayStr()) {
+        monthlySummary[dateStr] = { dateStr, day, entries: dayEntries, expenses: totalDayExpenses, balance: dayBalance };
       }
   }
   return monthlySummary;
@@ -677,19 +832,19 @@ function refreshAll(){
   renderBrand()
   const balance = calculateBalance()
   $('dashTotalEntries').innerText = money(balance.entries)
-  $('dashTotalExpenses').innerText = money(balance.expenses)
+  $('dashTotalExpenses').innerText = money(balance.expenses) 
   $('dashBalance').innerText = money(balance.balance)
   const todayBalance = calculateBalance(todayStr())
   $('adminTodayDate').innerText = formatDateBR(todayStr())
   $('dailyEntries').innerText = money(todayBalance.entries)
-  $('dailyExpenses').innerText = money(todayBalance.expenses)
+  $('dailyExpenses').innerText = money(todayBalance.expenses) 
   $('dailyBalance').innerText = money(todayBalance.balance)
   const schedulesToday = DATA.schedules.filter(s => s.date === todayStr())
-  const collectedToday = schedulesToday.filter(s => s.paid).reduce((sum, s) => sum + s.valor, 0)
+  const collectedToday = schedulesToday.filter(s => s.paid).reduce((sum, s) => sum + s.paidValue, 0)
   $('collectedToday').innerText = money(collectedToday)
   loadToday()
   renderServicesTable()
-  renderEntriesAndExpenses() // NOVO: Renderiza a lista de despesas em Admin
+  renderEntriesAndExpenses() 
   if($('view-admin').style.display === 'block') { renderMonthlySummary(); renderFullExpenseHistory(); }
   if($('view-history').style.display === 'block') { loadHistory(); }
 }
@@ -710,7 +865,7 @@ function loadToday(){
     row.insertCell().innerText = i + 1
     const clientCell = row.insertCell()
     clientCell.innerHTML = `<span class="client-name-clickable" onclick="promptAdminPasswordForEdit('${s.id}')">${s.name}</span>`
-    // mostra serviço principal + lista de adicionais completos
+    
     let serviceText = (service.name || 'Serviço')
     if (s.adds && s.adds.length > 0) {
         const addsNames = s.adds.map(addId => {
@@ -719,7 +874,7 @@ function loadToday(){
         });
         serviceText += ' + ' + addsNames.join(' + ');
     }
-    // se tiver desconto, mostra também (ex: R$ 45,00 (10% off))
+    
     let displayValor = money(s.valor);
     if (s.discountPercent && Number(s.discountPercent) > 0) {
         displayValor = `${money(s.valor)} <span style="font-size:10px;color:var(--muted)">(${s.discountPercent}% off)</span>`;
@@ -727,104 +882,38 @@ function loadToday(){
     row.insertCell().innerHTML = serviceText
     const timeCell = row.insertCell(); timeCell.innerHTML = `<strong>${s.time || '--:--'}</strong> / <span style="color:var(--info)">${endTime}</span>`
     row.insertCell().innerHTML = `<strong>${displayValor}</strong>`
-    const statusCell = row.insertCell(); statusCell.className = s.paid ? 'paid' : 'not-paid'; statusCell.innerText = s.paid ? 'Pago' : 'Pendente'
+    
+    let statusText = s.paid ? 'Pago' : 'Pendente';
+    if (s.paid && s.paymentMethod) {
+        statusText += ` (${s.paymentMethod.substring(0, 1).toUpperCase()})`; 
+    }
+    const statusCell = row.insertCell(); statusCell.className = s.paid ? 'paid' : 'not-paid'; statusCell.innerText = statusText
     const actionCell = row.insertCell(); actionCell.className = 'actions'
     
-    // Botões de Ações
     if(!s.paid){
       const payBtn = document.createElement('button'); payBtn.className = 'btn btn-sm'; payBtn.innerHTML = '<i class="fa-solid fa-hand-holding-dollar"></i> Pagar'; payBtn.onclick = () => confirmPayment(s.id); actionCell.appendChild(payBtn)
     } else {
-      const printBtn = document.createElement('button'); printBtn.className = 'btn ghost btn-sm'; printBtn.innerHTML = '<i class="fa-solid fa-receipt"></i> Nota'; printBtn.onclick = () => printNonFiscalNote(s); actionCell.appendChild(printBtn)
+      const printBtn = document.createElement('button'); printBtn.className = 'btn ghost btn-sm'; printBtn.innerHTML = '<i class="fa-solid fa-receipt"></i> Nota'; printBtn.onclick = () => printCustomerQuote(s); actionCell.appendChild(printBtn)
     }
     const cancelBtn = document.createElement('button'); cancelBtn.className = 'btn ghost btn-sm'; cancelBtn.style.color = 'var(--danger)'; cancelBtn.style.borderColor = 'var(--danger)'; cancelBtn.innerHTML = '<i class="fa-solid fa-times"></i>'; cancelBtn.onclick = () => cancelSchedule(s.id); actionCell.appendChild(cancelBtn)
     
-    // NOVO: Coluna Nota/Orçamento
     const noteCell = row.insertCell(); noteCell.className = 'actions';
     const noteBtn = document.createElement('button'); 
     noteBtn.className = 'btn ghost btn-sm'; 
-    noteBtn.innerHTML = '<i class="fa-solid fa-file-invoice-dollar"></i> Nota/Orçamento'; 
-    // AGORA CHAMA A FUNÇÃO QUE ABRE O MODAL PARA GERAR O PNG
-    noteBtn.onclick = () => printCustomerQuote(s); 
+    noteBtn.innerHTML = '<i class="fa-solid fa-file-invoice-dollar"></i> Orçamento'; 
+    noteBtn.onclick = () => printCustomerQuote(s, true); // True para forçar Orçamento
     noteCell.appendChild(noteBtn)
   })
 }
 
 /* =========== EDIT / MODAL =========== */
-function promptAdminPasswordForEdit(scheduleId) {
-    const pass = prompt(`🔐 Digite a Senha Administrativa para editar o agendamento ${scheduleId.substring(2)}:`); 
-    if(pass === DATA.adminPass){ editScheduleService(scheduleId); } else if (pass !== null) { alert('🚫 Senha incorreta! A edição não foi autorizada.'); }
-}
-
-function renderEditServiceOptions(vehicle = null, selectedServiceId = null, selectedAdds = []) {
-    vehicle = vehicle || $('editVehicle').value;
-    const mainServices = DATA.services.filter(s => s.isAdd === false && (s.category === vehicle || s.category === 'both'));
-    const addServices = DATA.services.filter(s => s.isAdd === true && (s.category === vehicle || s.category === 'both'));
-    
-    const selectService = $('editService');
-    selectService.innerHTML = mainServices.map(s => `<option value="${s.id}" data-price="${s.price}" data-time="${s.time}" ${s.id === selectedServiceId ? 'selected' : ''}>${s.name} (${money(s.price)})</option>`).join('');
-
-    const inputAdds = $('editAdds');
-    inputAdds.innerHTML = addServices.map(s => `
-      <label class="small" style="display:flex;align-items:center;gap:5px;">
-        <input type="checkbox" name="edit-add-on" value="${s.id}" data-price="${s.price}" onchange="updateEditServiceDetails()" ${selectedAdds.includes(s.id) ? 'checked' : ''}>
-        ${s.name} (${money(s.price)})
-      </label>
-    `).join('');
-}
-
-function editScheduleService(scheduleId) {
-    const schedule = DATA.schedules.find(s => s.id === scheduleId); if (!schedule) return;
-    $('editScheduleId').value = scheduleId;
-    
-    // Preenche campos simples
-    $('editClientNameInput').value = schedule.name;
-    $('editVehicle').value = schedule.vehicle || 'moto'; 
-    $('editDate').value = schedule.date;
-    $('editTime').value = schedule.time || '';
-    $('editValor').value = schedule.valor.toFixed(2); // Valor FINAL editável
-
-    // Renderiza serviços e adicionais
-    renderEditServiceOptions(schedule.vehicle, schedule.serviceId, schedule.adds || []);
-    
-    // Define a duração no campo de input, forçando o update com base nele
-    $('editTempoInput').value = schedule.tempo;
-    updateEditServiceDetails(true); 
-
-    $('editServiceModal').style.display = 'flex';
-}
-
-function updateEditServiceDetails(fromTempoInput = false) {
-    const serviceId = $('editService').value;
-    const adds = Array.from(document.querySelectorAll('#editAdds input[type="checkbox"]:checked')).map(cb => cb.value);
-    const startTime = $('editTime').value;
-
-    let details = getServicePriceAndDuration(serviceId, adds);
-    let totalTime = details.tempo;
-
-    if (!fromTempoInput) {
-        // Se a atualização veio do Serviço ou Adicional, atualiza a SUGESTÃO de valor e o campo TEMPO
-        $('editTempoInput').value = totalTime; 
-        $('editValor').value = details.valor.toFixed(2); // Sugere o valor BASE sem desconto
-    } else {
-        // Se a atualização veio do campo Tempo (duração), apenas atualiza o tempo total
-        totalTime = Number($('editTempoInput').value) || 0;
-    }
-    
-    if (startTime && totalTime > 0) {
-        const endTime = addMinsToTime(startTime, totalTime);
-        $('editEndTime').value = `${endTime} (${totalTime} min)`;
-    } else {
-        $('editEndTime').value = `--:-- (${totalTime} min)`;
-    }
-}
-
 function saveScheduleEdit(e) {
     e.preventDefault();
     const scheduleId = $('editScheduleId').value;
     const schedule = DATA.schedules.find(s => s.id === scheduleId);
     if (!schedule) { alert('Erro: Agendamento não encontrado.'); closeEditModal(); return; }
     
-    // Novos dados
+    const oldName = schedule.name; 
     const newName = $('editClientNameInput').value.trim();
     const newVehicle = $('editVehicle').value;
     const newDate = $('editDate').value;
@@ -832,19 +921,26 @@ function saveScheduleEdit(e) {
     const newServiceId = $('editService').value;
     const newAdds = Array.from(document.querySelectorAll('#editAdds input[type="checkbox"]:checked')).map(cb => cb.value);
     const newTempo = Number($('editTempoInput').value) || 0; 
-    const newValor = Number($('editValor').value) || 0; // Valor FINAL EDITADO
+    const newValor = Number($('editValor').value) || 0; 
+    const newPaymentMethod = $('editPaymentMethod').value;
+    const wasPaid = schedule.paid;
+    const nowPaid = newPaymentMethod !== 'pendente';
+
 
     if (newValor <= 0) { alert('O valor do serviço deve ser maior que zero.'); return; }
     
-    // Recalcula o desconto percentual apenas para referência/visualização na tabela
     const baseDetails = getServicePriceAndDuration(newServiceId, newAdds);
     const baseValor = baseDetails.valor;
     const newDiscount = baseValor > 0 ? (1 - (newValor / baseValor)) * 100 : 0;
 
-    // Validação de horário (somente para agendamentos futuros/atuais)
     if (newDate >= todayStr() && isTimeSlotOccupied(newTime, newTempo, newDate, scheduleId)) { return; }
 
-    // Atualiza o objeto
+    if (oldName !== newName) {
+        if (confirm(`O nome do cliente foi alterado de "${oldName}" para "${newName}". Deseja aplicar essa alteração a TODOS os agendamentos anteriores de "${oldName}"?`)) {
+            DATA.schedules.filter(s => s.name === oldName).forEach(s => s.name = newName);
+        }
+    }
+
     schedule.name = newName;
     schedule.vehicle = newVehicle;
     schedule.date = newDate;
@@ -852,58 +948,122 @@ function saveScheduleEdit(e) {
     schedule.serviceId = newServiceId;
     schedule.adds = newAdds;
     schedule.tempo = newTempo;
-    schedule.discountPercent = Math.round(newDiscount * 100) / 100; // Salva o desconto arredondado
+    schedule.discountPercent = Math.round(newDiscount * 100) / 100;
     schedule.valor = newValor;
+    
+    const newPaidValue = nowPaid ? calculateValueWithFee(newValor, newPaymentMethod) : 0;
 
-    // Se já estava pago, atualiza a entrada no caixa com o novo valor
-    if (schedule.paid) {
-        DATA.entries = DATA.entries.filter(e => e.scheduleId !== scheduleId);
-        const paymentDateISO = new Date().toISOString(); 
-        DATA.entries.push({ id: idGen(), label: `Agendamento [EDITADO] - ${newName} (${formatDateBR(newDate)})`, value: newValor, time: paymentDateISO, scheduleId: scheduleId });
-        alert(`Serviço atualizado. O novo valor de ${money(newValor)} foi registrado no caixa.`);
+    // Gerenciamento da Entrada no Caixa
+    DATA.entries = DATA.entries.filter(e => e.scheduleId !== scheduleId); 
+
+    if (nowPaid) {
+        const paymentDateISO = schedule.paidAt || new Date().toISOString();
+        schedule.paid = true;
+        schedule.paymentMethod = newPaymentMethod;
+        schedule.paidValue = newPaidValue;
+        schedule.paidAt = paymentDateISO;
+        DATA.entries.push({ id: idGen(), label: `Agendamento [EDITADO] - ${newName} (${formatDateBR(newDate)})`, value: newPaidValue, time: paymentDateISO, scheduleId: scheduleId });
+        alert(`Serviço atualizado. Novo valor líquido de ${money(newPaidValue)} registrado no caixa.`);
     } else {
-        alert(`Serviço atualizado. Novo valor: ${money(newValor)}.`);
+        schedule.paid = false;
+        schedule.paymentMethod = null;
+        schedule.paidValue = 0;
+        schedule.paidAt = null;
+        if (wasPaid) {
+            alert(`Serviço atualizado para PENDENTE. O valor anterior foi estornado/removido do caixa.`);
+        } else {
+            alert(`Serviço atualizado. Novo valor: ${money(newValor)}.`);
+        }
     }
+    
     save(); closeEditModal();
 }
+
+function editScheduleService(scheduleId) {
+    const schedule = DATA.schedules.find(s => s.id === scheduleId); if (!schedule) return;
+    $('editScheduleId').value = scheduleId;
+    
+    $('editClientNameInput').value = schedule.name;
+    $('editVehicle').value = schedule.vehicle || 'moto'; 
+    $('editDate').value = schedule.date;
+    $('editTime').value = schedule.time || '';
+    $('editValor').value = schedule.valor.toFixed(2); 
+    $('editTempoInput').value = schedule.tempo;
+    
+    $('editPaymentMethod').value = schedule.paid ? (schedule.paymentMethod || 'dinheiro') : 'pendente';
+
+    renderEditServiceOptions(schedule.vehicle, schedule.serviceId, schedule.adds || []);
+    updateEditServiceDetails(true); 
+    $('editServiceModal').style.display = 'flex';
+}
+
 function closeEditModal(){ $('editServiceModal').style.display = 'none'; }
+
 
 /* ============================ PAYMENT / CANCEL ============================ */
 function confirmPayment(scheduleId){
   const schedule = DATA.schedules.find(s => s.id === scheduleId); if(!schedule) return;
-  const paymentDateISO = new Date().toISOString();
-  let msg = `Confirmar o pagamento de ${schedule.name} no valor de ${money(schedule.valor)}?`;
+  const method = prompt('Forma de Pagamento (digite um número):\n1. Dinheiro\n2. PIX\n3. Cartão de Débito\n4. Cartão de Crédito');
+  let paymentMethod = 'dinheiro';
+  if(method === '2') paymentMethod = 'pix';
+  else if(method === '3') paymentMethod = 'debito';
+  else if(method === '4') paymentMethod = 'credito';
+  else if (method !== '1') { return; } // Cancela se não for 1, 2, 3, 4, ou cancelar
+
+  const netValue = calculateValueWithFee(schedule.valor, paymentMethod);
+  const fee = schedule.valor - netValue;
+
+  let msg = `Confirmar o pagamento de ${schedule.name} no valor de ${money(schedule.valor)} (${parsePaymentMethod(paymentMethod)})?`;
+  if (fee > 0) {
+      msg += `\nTaxa: ${money(fee)} - Valor líquido no caixa: ${money(netValue)}.`;
+  }
   if (schedule.date !== todayStr()) { msg += `\n\nATENÇÃO: Este agendamento era do dia ${formatDateBR(schedule.date)}.`; }
+  
   if(confirm(msg)){
-    // Remove entrada antiga se houver (previne duplicação se o botão for clicado mais de uma vez por engano)
     DATA.entries = DATA.entries.filter(e => e.scheduleId !== scheduleId); 
     schedule.paid = true;
-    DATA.entries.push({ id: idGen(), label: `Agendamento - ${schedule.name} (${formatDateBR(schedule.date)})`, value: schedule.valor, time: paymentDateISO, scheduleId: scheduleId })
+    schedule.paymentMethod = paymentMethod; 
+    schedule.paidValue = netValue; 
+    schedule.paidAt = new Date().toISOString();
+
+    DATA.entries.push({ id: idGen(), label: `Agendamento - ${schedule.name} (${formatDateBR(schedule.date)}) [${paymentMethod.toUpperCase()}]`, value: schedule.paidValue, time: schedule.paidAt, scheduleId: scheduleId })
     save()
-    alert('Pagamento confirmado e registrado no caixa!')
-    // AGORA CHAMA A FUNÇÃO DE IMPRESSÃO SIMPLES, JÁ QUE FOI PAGO
-    if(confirm('Deseja imprimir a nota não fiscal agora?')){ printNonFiscalNote(schedule); }
+    alert('Pagamento confirmado e registrado no caixa (valor líquido) com sucesso!')
+    if(confirm('Deseja imprimir a Nota/Comprovante agora (Otimizado para Térmica)?')){ printThermalNoteWrapper(schedule); }
   }
 }
 
 function togglePaymentStatus(scheduleId){
     const schedule = DATA.schedules.find(s => s.id === scheduleId); if(!schedule) return;
     if (schedule.paid) {
-        if(confirm(`Tem certeza que deseja marcar o serviço de ${schedule.name} como PENDENTE (Estornar ${money(schedule.valor)} do caixa)?`)){
+        if(confirm(`Tem certeza que deseja marcar o serviço de ${schedule.name} como PENDENTE (Estornar ${money(schedule.paidValue)} do caixa)?`)){
             DATA.entries = DATA.entries.filter(e => e.scheduleId !== scheduleId);
             schedule.paid = false;
-            schedule.paidAt = null; // Limpa a data de pagamento
+            schedule.paidAt = null; 
+            schedule.paymentMethod = null;
+            schedule.paidValue = 0;
             save();
             alert(`Status alterado para PENDENTE. Valor estornado do caixa.`);
         }
     } else {
-        if(confirm(`Confirmar o pagamento (Mudar para PAGO) do serviço de ${schedule.name} no valor de ${money(schedule.valor)}?`)){
-            const paymentDateISO = new Date().toISOString();
-            DATA.entries.push({ id: idGen(), label: `Agendamento - ${schedule.name} (${formatDateBR(schedule.date)})`, value: schedule.valor, time: paymentDateISO, scheduleId: scheduleId });
+        const method = prompt('Forma de Pagamento (digite um número):\n1. Dinheiro\n2. PIX\n3. Cartão de Débito\n4. Cartão de Crédito');
+        let paymentMethod = 'dinheiro';
+        if(method === '2') paymentMethod = 'pix';
+        else if(method === '3') paymentMethod = 'debito';
+        else if(method === '4') paymentMethod = 'credito';
+        else if (method !== '1') { return; } 
+
+        const netValue = calculateValueWithFee(schedule.valor, paymentMethod);
+        const paidAt = new Date().toISOString();
+
+        if(confirm(`Confirmar o pagamento (Mudar para PAGO) do serviço de ${schedule.name} (${parsePaymentMethod(paymentMethod)}) no valor líquido de ${money(netValue)}?`)){
+            DATA.entries.push({ id: idGen(), label: `Agendamento - ${schedule.name} (${formatDateBR(schedule.date)}) [${paymentMethod.toUpperCase()}]`, value: netValue, time: paidAt, scheduleId: scheduleId });
             schedule.paid = true;
-            schedule.paidAt = paymentDateISO; // Adiciona data de pagamento
+            schedule.paidAt = paidAt; 
+            schedule.paymentMethod = paymentMethod;
+            schedule.paidValue = netValue;
             save();
-            alert(`Status alterado para PAGO. Valor adicionado ao caixa.`);
+            alert(`Status alterado para PAGO. Valor líquido (${money(netValue)}) adicionado ao caixa.`);
         }
     }
 }
@@ -914,7 +1074,7 @@ function cancelSchedule(id) {
         if (!schedule) return;
         if (schedule.paid) {
              DATA.entries = DATA.entries.filter(e => e.scheduleId !== id);
-             alert(`Agendamento cancelado. A entrada de ${money(schedule.valor)} foi estornada/removida do caixa.`);
+             alert(`Agendamento cancelado. A entrada de ${money(schedule.paidValue)} foi estornada/removida do caixa.`);
         } else {
              alert('Agendamento cancelado com sucesso.');
         }
@@ -929,44 +1089,153 @@ function downloadImageNote() {
     const clientName = $('noteClientDetails').querySelector('strong').innerText.replace(/\s/g, '_').substring(0, 20);
     const dateStr = todayStr().replace(/-/g, '');
     
-    // Usa html2canvas para capturar o div como uma imagem
+    // Altera temporariamente o padding para evitar corte na imagem (opcional, dependendo do design)
+    const originalPadding = element.style.padding;
+    element.style.padding = '30px'; 
+
     html2canvas(element, { 
         backgroundColor: '#ffffff',
-        scale: 2 // Escala maior para melhor qualidade em telas de alta resolução
+        scale: 2 
     }).then(canvas => {
-        // Converte o canvas para uma imagem PNG
+        // Volta o padding ao normal
+        element.style.padding = originalPadding; 
+
         const imgData = canvas.toDataURL('image/png');
-        
-        // Cria um link para download
         const a = document.createElement('a');
         a.href = imgData;
-        a.download = `nota_apagar_${clientName}_${dateStr}.png`;
+        a.download = `nota_${clientName}_${dateStr}.png`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        
-        alert('Imagem PNG da Nota/Orçamento baixada!');
+        alert('Imagem PNG da Nota/Comprovante baixada!');
     }).catch(error => {
+        // Volta o padding ao normal em caso de erro
+        element.style.padding = originalPadding; 
         console.error('Erro ao gerar PNG:', error);
         alert('Erro ao gerar a imagem da nota. Tente novamente ou use a impressão/copia.');
     });
 }
 
-function printCustomerQuote(schedule) {
-    // Esta função agora PREENCHE o modal de imagem
+let currentScheduleForPrint = null; // Variável para armazenar o agendamento atual
+
+// Wrapper para impressão térmica (usa a variável global)
+function printThermalNoteWrapper(schedule = null) {
+    if (schedule) {
+        currentScheduleForPrint = schedule; // Se vier da confirmação de pagamento
+    }
+    if (currentScheduleForPrint) {
+        printThermalNote(currentScheduleForPrint);
+    } else {
+        alert('Erro: Não há agendamento para imprimir.');
+    }
+}
+
+// Função para impressão térmica (Texto simples e estreito)
+function printThermalNote(s){
+    if (!s) return;
+    const service = DATA.services.find(svc => svc.id === s.serviceId) || {name: 'Serviço', price: 0}
+    const valorBase = (DATA.services.find(s=>s.id===s.serviceId)?.price || 0) + (s.adds||[]).reduce((acc,id)=> acc + ((DATA.services.find(s=>s.id===id)?.price)||0),0);
+    const descontoAplicado = valorBase - s.valor;
+    const isPaid = s.paid || false;
+    const isQuote = !isPaid; // Se não está pago, é um orçamento
+
+    let items = '';
+    items += `${service.name.toUpperCase()}\n`;
+    items += `  VALOR: ${money(service.price)}\n`;
+    if(s.adds && s.adds.length){
+        s.adds.forEach(addId => {
+            const addSvc = DATA.services.find(s => s.id === addId);
+            if (addSvc) { items += `  + ${addSvc.name} (+${money(addSvc.price)})\n`; }
+        });
+    }
+
+    let paymentInfo = '';
+    let title = isQuote ? 'ORÇAMENTO' : 'COMPROVANTE DE PAGAMENTO';
+    if (isPaid) {
+        paymentInfo += `FORMA PGTO: ${parsePaymentMethod(s.paymentMethod).toUpperCase()}\n`;
+        if (s.paymentMethod === 'credito' || s.paymentMethod === 'debito') {
+             const netValue = s.paidValue;
+             const fee = s.valor - netValue;
+             const feeRate = s.paymentMethod === 'credito' ? DATA.fees.credito : DATA.fees.debito;
+             paymentInfo += `TAXA (${feeRate.toFixed(2)}%): - ${money(fee)}\n`;
+             paymentInfo += `VALOR LIQ: ${money(netValue)}\n`;
+        }
+        paymentInfo += `HORA PGTO: ${s.paidAt ? s.paidAt.substring(11, 16) : '--:--'}\n`;
+    }
+
+    // Logo em ASCII Art simples ou URL, mas o navegador tentará renderizar o CSS/HTML
+    const logoHtml = DATA.brand.logo ? `<img src="${DATA.brand.logo}" style="width:50px; height:50px; display:block; margin: 0 auto; margin-bottom: 5px;">` : '';
+
+    const noteContent = `
+        <html>
+        <head>
+            <title>${title}</title>
+            <style>
+                @page { size: 80mm auto; margin: 0; }
+                body { 
+                    font-family: 'Consolas', monospace; 
+                    font-size: 9pt; 
+                    width: 80mm; 
+                    padding: 5px; 
+                    margin: 0;
+                    color: #000;
+                }
+                .note-content { width: 100%; margin: 0 auto; }
+                h3 { margin: 5px 0; font-size: 11pt; text-align: center; }
+                p { margin: 2px 0; }
+                .hr { border-top: 1px dashed #333; margin: 5px 0; }
+                .total { font-size: 13pt; font-weight: bold; text-align: right; }
+                .status { font-weight: bold; text-align: center; margin-top: 5px;}
+            </style>
+        </head>
+        <body>
+        <div class="note-content">
+            ${logoHtml}
+            <h3 style="text-align: center;">--- ${DATA.brand.name.toUpperCase()} ---</h3>
+            <p style="text-align: center; font-size: 8pt;">${title} (NÃO FISCAL)</p>
+            <div class="hr"></div>
+            <p>CLIENTE: ${s.name}</p>
+            <p>DATA AGEND: ${formatDateBR(s.date)} ${s.time ? `(${s.time})` : ''}</p>
+            <p>TIPO VEÍC: ${s.vehicle ? s.vehicle.toUpperCase() : 'OUTROS'}</p>
+            <div class="hr"></div>
+            <p style="font-weight: bold;">SERVIÇOS:</p>
+            <pre style="margin: 0; font-size: 8pt; white-space: pre-wrap;">${items}</pre>
+            ${descontoAplicado > 0 ? `<p style="font-weight: bold; color: red;">DESCONTO (${s.discountPercent}%): - ${money(descontoAplicado)}</p>` : ''}
+            <div class="hr"></div>
+            ${isPaid ? `<p style="font-weight: bold;">INFO PAGAMENTO:</p><pre style="margin: 0; font-size: 8pt;">${paymentInfo}</pre><div class="hr"></div>` : ''}
+            <p class="total">TOTAL: ${money(s.valor)}</p>
+            <div class="hr"></div>
+            <p class="status" style="color: ${isPaid ? 'green' : 'red'};">STATUS: ${isPaid ? 'PAGO' : 'PENDENTE'}</p>
+            <div class="hr"></div>
+            <p style="text-align: center; font-size: 8pt; margin-top: 10px;">${isPaid ? 'AGRADECEMOS A PREFERÊNCIA!' : 'FAÇA SEU AGENDAMENTO.'}</p>
+        </div>
+        </body>
+        </html>
+    `;
+
+    const printWindow = window.open('', '_blank', 'width=300,height=600');
+    printWindow.document.write(noteContent);
+    printWindow.document.close();
+    printWindow.print();
+}
+
+function printCustomerQuote(schedule, forceQuote = false) {
+    currentScheduleForPrint = schedule; // Armazena o agendamento para o wrapper de impressão térmica
+
     const service = DATA.services.find(svc => svc.id === schedule.serviceId) || {name: 'Serviço', price: 0}
-    const itemsHtml = [];
-    // Calcula o valor base
+    const isPaid = schedule.paid && !forceQuote; // Se forçar Orçamento, não exibe como pago
+    const isQuote = !isPaid;
     const baseValor = (DATA.services.find(s=>s.id===schedule.serviceId)?.price || 0) + (schedule.adds||[]).reduce((acc,id)=> acc + ((DATA.services.find(s=>s.id===id)?.price)||0),0);
     const descontoAplicado = baseValor - schedule.valor;
-
-    // 1. Serviço Principal
+    const itemsHtml = [];
+    const paymentInfoHtml = [];
+    
+    // Lista de Itens
     itemsHtml.push(`<div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; margin-bottom:3px;">
                         <span>${service.name}</span>
                         <span>${money(service.price)}</span>
                     </div>`);
 
-    // 2. Adicionais
     if(schedule.adds && schedule.adds.length){
         schedule.adds.forEach(addId => {
             const addSvc = DATA.services.find(s => s.id === addId);
@@ -979,82 +1248,37 @@ function printCustomerQuote(schedule) {
         });
     }
 
-    // 3. Desconto
     if (descontoAplicado > 0) {
         itemsHtml.push(`<div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; color:var(--danger); margin-top:5px; border-top:1px dashed #ccc; padding-top:5px;">
                             <span>Desconto (${Math.round(schedule.discountPercent || 0)}%)</span>
                             <span>- ${money(descontoAplicado)}</span>
                         </div>`);
     }
+    
+    // Info Pagamento
+    if (isPaid) {
+        paymentInfoHtml.push(`<div style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 5px;">
+            <p style="margin:0; font-weight:700;">STATUS: PAGO</p>
+            <p style="margin:0;">Forma: ${parsePaymentMethod(schedule.paymentMethod)}</p>
+            <p style="margin:0;">Horário: ${schedule.paidAt ? new Date(schedule.paidAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '--:--'}</p>
+        </div>`);
+    } else {
+        paymentInfoHtml.push(`<div style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 5px;">
+            <p style="margin:0; font-weight:700; color:var(--danger);">STATUS: PENDENTE / ORÇAMENTO</p>
+        </div>`);
+    }
 
-    // Preenche o modal
+    $('noteTypeLabel').innerText = isQuote ? 'ORÇAMENTO (NÃO FISCAL)' : 'COMPROVANTE DE PAGAMENTO';
     $('noteClientDetails').innerHTML = `
         <p style="margin:0;">Cliente: <strong>${schedule.name}</strong></p>
         <p style="margin:0;">Agendado: ${formatDateBR(schedule.date)} ${schedule.time ? `às ${schedule.time}` : ''} (${schedule.tempo} min)</p>
         <p style="margin:0; font-weight:700; color:var(--info);">Total Base: ${money(baseValor)}</p>
     `;
     $('noteItemsList').innerHTML = itemsHtml.join('');
+    $('notePaymentInfo').innerHTML = paymentInfoHtml.join('');
     $('noteFinalValue').innerText = money(schedule.valor);
     
-    // Exibe o modal
     $('imageNoteContainer').style.display = 'flex';
-}
-
-function printNonFiscalNote(schedule){
-    // Função de impressão simples (texto) para notas pagas (botão Nota/Pago)
-    const service = DATA.services.find(svc => svc.id === schedule.serviceId) || {name: 'Serviço', price: 0}
-    const itemsHtml = [];
-    const mainPrice = (DATA.services.find(s => s.id === schedule.serviceId)?.price) || 0;
-    itemsHtml.push(`<div class="item"><span>- ${service.name}</span><span class="value">${money(mainPrice)}</span></div>`);
-    if(schedule.adds && schedule.adds.length){
-      schedule.adds.forEach(addId => {
-        const addSvc = DATA.services.find(s => s.id === addId);
-        itemsHtml.push(`<div class="item" style="margin-left:10px;"><span style="font-size:9pt;">+ ${addSvc?.name || 'Adicional'}</span><span style="font-size:9pt;">${money(addSvc?.price || 0)}</span></div>`);
-      });
-    }
-    const valorBase = (DATA.services.find(s=>s.id===schedule.serviceId)?.price || 0) + (schedule.adds||[]).reduce((acc,id)=> acc + ((DATA.services.find(s=>s.id===id)?.price)||0),0);
-    const descontoAplicado = valorBase - schedule.valor;
-    const discountLine = descontoAplicado > 0 ? `<div class="item"><span>Desconto (${Math.round(schedule.discountPercent)}%)</span><span class="value">- ${money(descontoAplicado)}</span></div>` : '';
-    const noteContent = `
-        <style>
-            @media print {
-                body { font-family: 'Consolas', monospace; font-size: 10pt; margin: 0; padding: 0; }
-                .note { width: 80mm; margin: 0 auto; padding: 10px; border: 1px dashed #333; }
-                .header, .footer { text-align: center; margin-bottom: 5px; }
-                .item, .total { display: flex; justify-content: space-between; margin-bottom: 2px; }
-                .separator { border-top: 1px dashed #999; margin: 5px 0; }
-                .value { font-weight: bold; }
-            }
-        </style>
-        <div class="note">
-            <div class="header">
-                <h3>--- ${DATA.brand.name.toUpperCase()} ---</h3>
-                <p style="margin:0;font-size:9pt;">NOTA NÃO FISCAL (SIMPLES)</p>
-                <p style="margin:0;font-size:9pt;">${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}</p>
-            </div>
-            <div class="separator"></div>
-            <p style="margin:2px 0;">CLIENTE: ${schedule.name}</p>
-            <p style="margin:2px 0;">TIPO: ${schedule.vehicle ? schedule.vehicle.toUpperCase() : ''}</p>
-            <div class="separator"></div>
-            <p style="margin:5px 0 0;">DESCRIÇÃO DOS SERVIÇOS:</p>
-            ${itemsHtml.join('')}
-            ${discountLine}
-            <div class="separator"></div>
-            <div class="total">
-                <span style="font-size:12pt;">TOTAL PAGO:</span>
-                <span class="value" style="font-size:12pt;color:var(--accent);">${money(schedule.valor)}</span>
-            </div>
-            <div class="separator"></div>
-            <div class="footer">
-                <p style="margin:0;font-size:8pt;">OBRIGADO PELA PREFERÊNCIA!</p>
-                <p style="margin:0;font-size:8pt;">Serviço em: ${formatDateBR(schedule.date)} às ${schedule.time || '--:--'}</p>
-            </div>
-        </div>
-    `;
-    const printWindow = window.open('', '_blank', 'width=400,height=600');
-    printWindow.document.write(noteContent);
-    printWindow.document.close();
-    printWindow.print();
 }
 
 /* ============================ NEW (SERVIÇOS E VALOR EDITÁVEL) ============================ */
@@ -1079,23 +1303,52 @@ function renderServiceOptions(selectedVehicle = null, selectedServiceId = null, 
   inputAdds.innerHTML = addServices.map(s => `<label class="small" style="display:flex;align-items:center;gap:5px;"><input type="checkbox" name="add-on" value="${s.id}" data-price="${s.price}" onchange="updateTimeDetails()" ${selectedAdds.includes(s.id) ? 'checked' : ''}>${s.name} (${money(s.price)})</label>`).join('')
 }
 
-/* NOVO: Mostra um alerta se a data do serviço passado for anterior à de hoje. */
 function updatePastDateWarning() {
     const date = $('inputDate').value; const today = todayStr(); const warning = $('pastDateWarning');
     const paymentOption = $('paymentOptionContainer');
     if (date < today) { 
         warning.style.display = 'flex'; 
-        paymentOption.style.display = 'flex';
+        paymentOption.style.display = 'block';
+        $('inputMarkPaid').checked = true; 
+        togglePaymentDetails(true);
     } else { 
         warning.style.display = 'none'; 
-        // Esconde a opção de pagamento se for agendamento futuro
-        if (date > today) { paymentOption.style.display = 'none'; }
-        // Mostra a opção de pagamento se for agendamento para HOJE
-        else { paymentOption.style.display = 'flex'; }
+        if (date > today) { paymentOption.style.display = 'none'; $('inputMarkPaid').checked = false; togglePaymentDetails(false); }
+        else { paymentOption.style.display = 'block'; }
     }
 }
 
-/* Carrega histórico rápido do cliente (novo agendamento) */
+function togglePaymentDetails(isPaid) {
+    $('paymentDetails').style.display = isPaid ? 'grid' : 'none';
+    if(isPaid) {
+        calculateFinalValueWithFee(); 
+    }
+}
+
+function showNameSuggestions(input) {
+    const suggestionsDiv = $('nameSuggestions');
+    if (input.length < 2) { suggestionsDiv.style.display = 'none'; return; }
+
+    const uniqueNames = [...new Set(DATA.schedules.map(s => s.name))];
+    const filteredNames = uniqueNames.filter(name => 
+        name.toLowerCase().includes(input.toLowerCase())
+    ).slice(0, 5);
+
+    if (filteredNames.length === 0) { suggestionsDiv.style.display = 'none'; return; }
+
+    suggestionsDiv.innerHTML = filteredNames.map(name => 
+        `<div class="autocomplete-item" onclick="selectSuggestedName('${name}')">${name}</div>`
+    ).join('');
+    suggestionsDiv.style.display = 'block';
+}
+
+function selectSuggestedName(name) {
+    $('inputName').value = name;
+    $('nameSuggestions').style.display = 'none';
+    loadClientHistory(name);
+}
+
+
 function loadClientHistory(clientName) {
     const container = $('clientHistoryContainer'); const list = $('clientHistoryList');
     if (clientName.length < 3) { container.style.display = 'none'; list.innerHTML = ''; return; }
@@ -1110,29 +1363,27 @@ function loadClientHistory(clientName) {
     container.style.display = 'block';
 }
 
-/* Preenche forms com histórico */
 function fillFormFromHistory(scheduleId) {
     const s = DATA.schedules.find(s => s.id === scheduleId); if (!s) return;
     $('inputName').value = s.name; 
     $('inputVehicle').value = s.vehicle; 
     renderServiceOptions(s.vehicle, s.serviceId, s.adds); 
-    $('inputDiscount').value = s.discountPercent || ''; // Apenas sugestão
-    // Não preenche data e hora automaticamente para forçar o usuário a escolher
-    updateTimeDetails(); alert(`📋 Campos de Serviço e Tipo preenchidos com base no agendamento de ${formatDateBR(s.date)}.`);
+    $('inputDiscount').value = s.discountPercent || ''; 
+    updateTimeDetails(); 
+    alert(`📋 Campos de Serviço e Tipo preenchidos com base no agendamento de ${formatDateBR(s.date)}. Por favor, confira Data e Hora.`);
 }
 
-/* Atualiza previsão e calcula valor com desconto no form Novo (agora sugestão) */
 function updateTimeDetails(){
     const serviceId = $('inputService').value; const adds = Array.from(document.querySelectorAll('#inputAdds input[type="checkbox"]:checked')).map(cb => cb.value); const startTime = $('inputTime').value;
     const details = getServicePriceAndDuration(serviceId, adds); const totalTime = details.tempo;
     const discount = Number($('inputDiscount').value) || 0; const finalValue = applyDiscount(details.valor, discount);
     
-    // Sugere o valor final (editável)
     $('inputTotalWithDiscount').value = finalValue.toFixed(2);
     
     if (startTime && totalTime > 0) { const endTime = addMinsToTime(startTime, totalTime); $('endTime').value = `${endTime} (${totalTime} min)`; } else { $('endTime').value = `--:-- (${totalTime} min)`; }
     
-    updatePastDateWarning(); // Verifica se é passado/presente/futuro
+    updatePastDateWarning(); 
+    calculateFinalValueWithFee(); 
 }
 
 function resetNewForm() {
@@ -1144,29 +1395,29 @@ function resetNewForm() {
     $('clientHistoryContainer').style.display='none'; 
     $('clientHistoryList').innerHTML=''; 
     updatePastDateWarning();
+    $('nameSuggestions').style.display = 'none'; 
+    $('inputMarkPaid').checked = false;
+    togglePaymentDetails(false); 
 }
 
 
-/* Cria novo agendamento (Valor total é o EDITADO) */
 function createSchedule(e){
   e.preventDefault()
-  const name = $('inputName').value; const vehicle = $('inputVehicle').value; const serviceId = $('inputService').value; const date = $('inputDate').value; const time = $('inputTime').value || '00:00'; const adds = Array.from(document.querySelectorAll('#inputAdds input[type="checkbox"]:checked')).map(cb => cb.value)
-  const finalValue = Number($('inputTotalWithDiscount').value) || 0; // VALOR FINAL EDITÁVEL
+  const name = $('inputName').value.trim(); const vehicle = $('inputVehicle').value; const serviceId = $('inputService').value; const date = $('inputDate').value; const time = $('inputTime').value || '00:00'; const adds = Array.from(document.querySelectorAll('#inputAdds input[type="checkbox"]:checked')).map(cb => cb.value)
+  const finalValue = Number($('inputTotalWithDiscount').value) || 0; 
   const markPaid = $('inputMarkPaid').checked;
+  const paymentMethod = markPaid ? $('inputPaymentMethod').value : null;
+  const paidValue = markPaid ? Number($('inputPaidValueWithFee').value) : 0;
 
   if(!serviceId){ alert('Selecione um serviço principal.'); return }
   if(finalValue <= 0){ alert('O valor final deve ser maior que zero.'); return }
   
   const serviceDetails = getServicePriceAndDuration(serviceId, adds)
   const totalTime = serviceDetails.tempo;
-  
-  // Calcula o desconto percentual baseado no valor editado, para referência
   const baseValor = serviceDetails.valor;
   const discountPercent = baseValor > 0 ? (1 - (finalValue / baseValor)) * 100 : 0;
   
-  // Validação de horário: SOMENTE para agendamentos na data atual ou futura
   if (date >= todayStr() && isTimeSlotOccupied(time, totalTime, date)) { 
-    // isTimeSlotOccupied já mostra o alerta
     return; 
   }
 
@@ -1174,24 +1425,26 @@ function createSchedule(e){
     id: idGen(), name, vehicle, serviceId, adds, date, time, 
     valor: finalValue, 
     tempo: totalTime, 
-    discountPercent: Math.round(discountPercent * 100) / 100, // Salva o desconto arredondado
+    discountPercent: Math.round(discountPercent * 100) / 100, 
     paid: markPaid, 
+    paymentMethod: paymentMethod, 
+    paidValue: paidValue,       
+    paidAt: markPaid ? new Date().toISOString() : null, 
     createdAt: new Date().toISOString() 
   }
   
   DATA.schedules.push(newSchedule); 
   
   if(markPaid){
-      // Usa a data/hora atual para o registro
       const paymentDateISO = new Date().toISOString(); 
-      DATA.entries.push({ id: idGen(), label: `Agendamento - ${name} (${formatDateBR(date)})`, value: newSchedule.valor, time: paymentDateISO, scheduleId: newSchedule.id })
+      DATA.entries.push({ id: idGen(), label: `Agendamento - ${name} (${formatDateBR(date)}) [${paymentMethod.toUpperCase()}]`, value: paidValue, time: paymentDateISO, scheduleId: newSchedule.id })
   }
   
   save()
   
   const msg = date < todayStr() 
-    ? `✅ Serviço Histórico de ${name} (em ${formatDateBR(date)}) registrado. Valor: ${money(newSchedule.valor)}. Status: ${markPaid ? 'PAGO' : 'PENDENTE'}.`
-    : `Agendamento para ${name} em ${formatDateBR(date)} às ${time} confirmado! Previsão de saída: ${addMinsToTime(time, totalTime)}. Total: ${money(newSchedule.valor)}.`;
+    ? `✅ Serviço Histórico de ${name} (em ${formatDateBR(date)}) registrado. Valor líquido: ${money(paidValue)}. Status: ${markPaid ? 'PAGO' : 'PENDENTE'}.`
+    : `Agendamento para ${name} em ${formatDateBR(date)} às ${time} confirmado! Total: ${money(newSchedule.valor)}.`;
   
   alert(msg)
   
@@ -1208,28 +1461,32 @@ function showDate(){
     const service = DATA.services.find(svc => svc.id === s.serviceId) || {name: 'Serviço excluído'}
     const endTime = s.time ? addMinsToTime(s.time, s.tempo) : '--:--';
     const row = tbody.insertRow(); row.insertCell().innerText = formatDateBR(s.date); row.insertCell().innerText = s.name
-    // mostra serviço + adicionais
     let serviceText = service.name; if (s.adds && s.adds.length>0){ const addsNames=s.adds.map(id=> (DATA.services.find(x=>x.id===id)?.name)||'Adicional'); serviceText += ' + ' + addsNames.join(' + '); }
     row.insertCell().innerText = serviceText
     const timeCell = row.insertCell(); timeCell.innerHTML = `<strong>${s.time || '--:--'}</strong> / <span style="color:var(--info)">${endTime}</span>`
     row.insertCell().innerText = money(s.valor)
-    const statusCell = row.insertCell(); statusCell.className = s.paid ? 'paid' : 'not-paid'; statusCell.innerText = s.paid ? 'Pago' : 'Pendente'
-    const actionCell = row.insertCell(); actionCell.className = 'actions'
     
+    let statusText = s.paid ? 'Pago' : 'Pendente';
+    if (s.paid && s.paymentMethod) {
+        statusText += ` (${s.paymentMethod.substring(0, 1).toUpperCase()})`; 
+    }
+    const statusCell = row.insertCell(); statusCell.className = s.paid ? 'paid' : 'not-paid'; statusCell.innerText = statusText
+    
+    const actionCell = row.insertCell(); actionCell.className = 'actions'
     const cancelBtn = document.createElement('button'); cancelBtn.className = 'btn ghost btn-sm'; cancelBtn.style.color = 'var(--danger)'; cancelBtn.style.borderColor = 'var(--danger)'; cancelBtn.innerHTML = '<i class="fa-solid fa-times"></i> Cancelar'; cancelBtn.onclick = () => cancelSchedule(s.id); actionCell.appendChild(cancelBtn)
     
-    // NOVO: Coluna Nota/Orçamento na tela Agenda
     const noteCell = row.insertCell(); noteCell.className = 'actions';
     const noteBtn = document.createElement('button'); 
     noteBtn.className = 'btn ghost btn-sm'; 
-    noteBtn.innerHTML = '<i class="fa-solid fa-file-invoice-dollar"></i> Nota/Orçamento'; 
-    noteBtn.onclick = () => printCustomerQuote(s); 
+    noteBtn.innerHTML = '<i class="fa-solid fa-file-invoice-dollar"></i> Orçamento'; 
+    noteBtn.onclick = () => printCustomerQuote(s, true); 
     noteCell.appendChild(noteBtn)
   })
 }
 
 /* ============================ HISTORY VIEW ============================ */
 function loadHistory(){
+  // O conteúdo do histórico é sempre visível, mas a navegação para a tela 'history' requer senha.
   const search = $('historySearchInput').value.toLowerCase().trim(); const statusFilter = $('historyStatusFilter').value;
   const filteredSchedules = DATA.schedules.filter(s => {
     const service = DATA.services.find(svc => svc.id === s.serviceId) || {name: 'Serviço Excluído'};
@@ -1255,10 +1512,13 @@ function loadHistory(){
     const timeCell = row.insertCell(); timeCell.innerHTML = `<strong>${s.time || '--:--'}</strong> / <span style="color:var(--info)">${endTime}</span>`
     row.insertCell().innerText = `${s.tempo} min`
     row.insertCell().innerText = money(s.valor)
-    const statusCell = row.insertCell(); statusCell.className = s.paid ? 'paid' : 'not-paid'; statusCell.innerText = s.paid ? 'Pago' : 'Pendente'
+    
+    row.insertCell().innerText = s.paid ? parsePaymentMethod(s.paymentMethod) : '--';
+
+    let statusText = s.paid ? 'Pago' : 'Pendente';
+    const statusCell = row.insertCell(); statusCell.className = s.paid ? 'paid' : 'not-paid'; statusCell.innerText = statusText
     const actionCell = row.insertCell(); actionCell.className = 'actions'
     
-    // Toggle de status de pagamento
     const toggleBtn = document.createElement('button');
     toggleBtn.className = 'btn btn-sm';
     toggleBtn.style.backgroundColor = s.paid ? 'var(--danger)' : 'var(--success)';
@@ -1274,7 +1534,6 @@ function loadHistory(){
     cancelBtn.innerHTML = '<i class="fa-solid fa-times"></i>'; 
     cancelBtn.onclick = () => cancelSchedule(s.id); 
     actionCell.appendChild(cancelBtn);
-
   })
 }
 
@@ -1292,10 +1551,48 @@ function loadAdmin(){
   $('dailyEntries').innerText = money(todayBalance.entries)
   $('dailyExpenses').innerText = money(todayBalance.expenses)
   $('dailyBalance').innerText = money(todayBalance.balance)
+  
+  $('feeDebito').value = DATA.fees.debito.toFixed(2);
+  $('feeCredito').value = DATA.fees.credito.toFixed(2);
+  
   renderMonthlySummary(); renderServicesTable(); renderEntriesAndExpenses(); renderFullExpenseHistory();
 }
 
-// ... Funções de Admin (renderMonthlySummary, setInitialCash, saveConfig, resetConfig, clearAllData) ...
+function saveFees(){
+    const debito = Number($('feeDebito').value);
+    const credito = Number($('feeCredito').value);
+
+    if (isNaN(debito) || isNaN(credito) || debito < 0 || credito < 0 || debito > 100 || credito > 100) {
+        alert('Taxas inválidas. Use valores entre 0 e 100.');
+        return;
+    }
+
+    DATA.fees.debito = debito;
+    DATA.fees.credito = credito;
+    save();
+    alert('Taxas de débito/crédito salvas com sucesso!');
+}
+
+function saveConfig(){ 
+    DATA.brand.name = $('brandNameInput').value; 
+    const newPass = $('adminPassInput').value; 
+    if(newPass){ DATA.adminPass = newPass } 
+    
+    const logoFile = $('logoFile').files[0]; 
+    if(logoFile){ 
+        const reader = new FileReader(); 
+        reader.onload = function(e){ 
+            DATA.brand.logo = e.target.result; 
+            save(); 
+            alert('Configurações salvas (incluindo logo e/ou senha).') 
+        }; 
+        reader.readAsDataURL(logoFile) 
+    } else { 
+        save(); 
+        alert('Configurações salvas (exceto logo e/ou senha).') 
+    } 
+}
+
 
 /* ============================ MOVIMENTOS (ENTRADAS/SAÍDAS) ============================ */
 function renderEntriesAndExpenses(){
@@ -1312,22 +1609,6 @@ function addExpense(){
   alert('Despesa registrada.') 
 }
 
-/* NOVO: HISTÓRICO COMPLETO DE DESPESAS (EDITÁVEL) */
-function promptAdminPasswordForExpenseHistory() {
-    const pass = prompt(`🔐 Digite a Senha Administrativa para ver/editar o Histórico de Despesas:`); 
-    if(pass === DATA.adminPass){ renderFullExpenseHistory(); openExpenseHistoryModal(); } else if (pass !== null) { alert('🚫 Senha incorreta! Acesso não autorizado.'); }
-}
-
-function openExpenseHistoryModal() {
-    $('expenseHistoryModal').style.display = 'flex';
-}
-function closeExpenseHistoryModal() {
-    $('expenseHistoryModal').style.display = 'none';
-    // Re-renderiza o resumo após o fechamento, caso haja edições
-    renderEntriesAndExpenses(); 
-    refreshAll(); 
-}
-
 function renderFullExpenseHistory() {
     const tbody = $('expenseHistoryTable').querySelector('tbody'); tbody.innerHTML = '';
     const sortedExpenses = DATA.expenses.sort((a, b) => b.time.localeCompare(a.time));
@@ -1340,14 +1621,12 @@ function renderFullExpenseHistory() {
         const valueCell = row.insertCell(); valueCell.innerText = money(e.value); valueCell.style.color = 'var(--danger)';
         const actionCell = row.insertCell(); actionCell.className = 'actions';
 
-        // Botão Editar
         const editBtn = document.createElement('button');
         editBtn.className = 'btn ghost btn-sm';
         editBtn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
         editBtn.onclick = () => enableExpenseEdit(e.id, row, descCell, valueCell);
         actionCell.appendChild(editBtn);
 
-        // Botão Apagar
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'btn ghost btn-sm';
         deleteBtn.style.color = 'var(--danger)';
@@ -1358,33 +1637,27 @@ function renderFullExpenseHistory() {
     });
 }
 
+function openExpenseHistoryModal() { 
+    // Não precisa de senha, pois já está no Admin
+    renderFullExpenseHistory();
+    $('expenseHistoryModal').style.display = 'flex'; 
+}
+function closeExpenseHistoryModal() { $('expenseHistoryModal').style.display = 'none'; renderEntriesAndExpenses(); refreshAll(); }
 function enableExpenseEdit(id, row, descCell, valueCell) {
     if (row.classList.contains('edit-mode')) return;
     row.classList.add('edit-mode'); 
-
     const expense = DATA.expenses.find(exp => exp.id === id); if (!expense) return;
-
-    // Edição da Descrição
     const descInput = document.createElement('input'); descInput.type = 'text'; descInput.value = expense.label.replace('Despesa - ', '');
     descCell.innerHTML = ''; descCell.appendChild(descInput);
-
-    // Edição do Valor
     const valueInput = document.createElement('input'); valueInput.type = 'number'; valueInput.step = '0.01'; valueInput.min = '0'; valueInput.value = expense.value.toFixed(2);
     valueCell.innerHTML = ''; valueCell.appendChild(valueInput);
-
     const actionCell = row.cells[3]; actionCell.innerHTML = '';
-    
-    // Botão Salvar
     const saveBtn = document.createElement('button'); saveBtn.className = 'btn btn-sm'; saveBtn.innerHTML = '<i class="fa-solid fa-save"></i>'; 
     saveBtn.onclick = () => saveExpenseEdit(id, descInput.value, valueInput.value); actionCell.appendChild(saveBtn);
-    
-    // Botão Cancelar
     const cancelBtn = document.createElement('button'); cancelBtn.className = 'btn ghost btn-sm'; cancelBtn.innerHTML = '<i class="fa-solid fa-times"></i>'; 
     cancelBtn.onclick = () => renderFullExpenseHistory(); actionCell.appendChild(cancelBtn);
-
     descInput.focus();
 }
-
 function saveExpenseEdit(id, newDesc, newValue) {
     const expense = DATA.expenses.find(exp => exp.id === id); if (!expense) return;
     const value = Number(newValue);
@@ -1399,7 +1672,6 @@ function saveExpenseEdit(id, newDesc, newValue) {
     renderFullExpenseHistory();
     alert('Despesa atualizada com sucesso.');
 }
-
 function deleteExpense(id) {
     if(confirm('Tem certeza que deseja APAGAR esta despesa?')){
         DATA.expenses = DATA.expenses.filter(e => e.id !== id);
@@ -1415,18 +1687,15 @@ document.addEventListener('DOMContentLoaded', () => {
     $('calendarDate').value = todayStr(); 
     $('inputDate').value = todayStr();
     renderServiceOptions(); 
-    updateTimeDetails(); // Garante o cálculo inicial
-    updatePastDateWarning(); // Garante a exibição correta do aviso/opção de pagamento
+    updateTimeDetails(); 
 
     document.querySelectorAll('#inputService, #inputTime, #inputDate, #inputDiscount, #inputVehicle').forEach(el => el.addEventListener('change', updateTimeDetails));
     document.querySelectorAll('#inputAdds').forEach(el => el.addEventListener('change', updateTimeDetails));
     
-    // Adiciona listener para recalcular desconto quando o Valor Total é editado manualmente
-    $('inputTotalWithDiscount').addEventListener('input', () => {
-        // Apenas para fins visuais, se o usuário mexer no valor final, o desconto sugerido não é mais relevante.
-    });
+    $('inputTotalWithDiscount').addEventListener('input', calculateFinalValueWithFee);
     
 });
+
 
 /* ================== Funções do HTML que não foram alteradas mas são necessárias ================== */
 function renderMonthlySummary() {
@@ -1447,7 +1716,6 @@ function renderMonthlySummary() {
   const totalBalance = totalEntradas - totalSaidas; const totalBalanceCell = totalRow.insertCell(); totalBalanceCell.innerHTML = `<strong>${money(totalBalance)}</strong>`; totalBalanceCell.style.color = totalBalance >= 0 ? 'var(--success)' : 'var(--danger)';
 }
 function setInitialCash(){ const newCash = Number($('initialCash').value); if(isNaN(newCash) || newCash < 0){ alert('Valor inválido.'); return } DATA.initialCash = newCash; save(); alert(`Saldo inicial definido para ${money(newCash)}.`) }
-function saveConfig(){ DATA.brand.name = $('brandNameInput').value; const newPass = $('adminPassInput').value; if(newPass){ DATA.adminPass = newPass } const logoFile = $('logoFile').files[0]; if(logoFile){ const reader = new FileReader(); reader.onload = function(e){ DATA.brand.logo = e.target.result; save(); alert('Configurações salvas (incluindo logo e/ou senha).') }; reader.readAsDataURL(logoFile) } else { save(); alert('Configurações salvas (exceto logo e/ou senha).') } }
 function resetConfig(){ if(confirm('Tem certeza que deseja apagar TODOS os dados (agendamentos, caixa, serviços)? Esta ação é irreversível!')){ localStorage.removeItem(KEY); DATA = JSON.parse(JSON.stringify(DEFAULT)); save(); alert('Todos os dados foram resetados.'); location.reload() } }
 function clearAllData(keepSchedules = false){ let message = 'ATENÇÃO: Deseja zerar todo o fluxo de caixa (Saldo Inicial, Entradas e Despesas)?'; if (keepSchedules) { message += '\n\nOs AGENDAMENTOS serão MANTIDOS (mas terão o status de PENDENTE para o novo ciclo de caixa).'; } else { message += '\n\nOs AGENDAMENTOS também serão APAGADOS.' } if(confirm(message)){ DATA.initialCash = 0; DATA.entries = []; DATA.expenses = []; if(!keepSchedules){ DATA.schedules = []; } else { DATA.schedules.forEach(s => s.paid = false); } save(); alert('Fluxo de caixa zerado com sucesso!'); loadAdmin(); } }
 function clearToday(){ if(confirm('Tem certeza que deseja limpar a lista de agendamentos de HOJE? Somente agendamentos de hoje serão removidos.')){ const today = todayStr(); DATA.schedules = DATA.schedules.filter(s => s.date !== today); save(); alert('Agendamentos de hoje limpos.') } }
@@ -1478,11 +1746,9 @@ function saveEdit(id, field, newValue, row) {
     const service = DATA.services.find(s => s.id === id); if (!service) return;
     if (field === 'price' || field === 'time') { newValue = Number(newValue); if (isNaN(newValue) || newValue < 0) { alert(`Valor inválido para ${field}.`); renderServicesTable(); return; } } else if (field === 'isAdd') { newValue = newValue === 'true'; } else if (field === 'name' && !newValue.trim()) { alert('O nome do serviço não pode ser vazio.'); renderServicesTable(); return; }
     service[field] = newValue;
-    // Se mudou preço ou tempo, recalcula os agendamentos PENDENTES que usam este serviço
     if(field === 'price' || field === 'time'){ 
         DATA.schedules.filter(s => s.serviceId === id && !s.paid).forEach(s => { 
             const details = getServicePriceAndDuration(s.serviceId, s.adds); 
-            // Recalcula o valor baseado no novo valor base, mantendo o desconto percentual
             const newValor = applyDiscount(details.valor, s.discountPercent || 0); 
             s.valor = newValor;
             s.tempo = details.tempo; 
