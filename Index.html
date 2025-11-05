@@ -745,6 +745,15 @@ function promptAdminPasswordForHistory() {
     nav(document.querySelector('[data-view="history"]'));
 }
 
+/* NOVO: Função para solicitar senha e abrir a edição */
+function promptAdminPasswordForEdit(scheduleId) {
+    const pass = prompt('🔐 Senha administrativa para Edição:'); 
+    if(pass !== DATA.adminPass){ 
+        alert('🚫 Senha incorreta! Acesso para edição não autorizado.'); 
+        return; 
+    }
+    editScheduleService(scheduleId);
+}
 
 /* ============================ BRAND & CLOCK ============================ */
 function renderBrand(){ 
@@ -863,6 +872,8 @@ function loadToday(){
     const endTime = s.time ? addMinsToTime(s.time, s.tempo) : '--:--';
     const row = tbody.insertRow()
     row.insertCell().innerText = i + 1
+    
+    /* CORREÇÃO 1: Adiciona a chamada de promptAdminPasswordForEdit ao clicar no nome do cliente */
     const clientCell = row.insertCell()
     clientCell.innerHTML = `<span class="client-name-clickable" onclick="promptAdminPasswordForEdit('${s.id}')">${s.name}</span>`
     
@@ -995,6 +1006,40 @@ function editScheduleService(scheduleId) {
     renderEditServiceOptions(schedule.vehicle, schedule.serviceId, schedule.adds || []);
     updateEditServiceDetails(true); 
     $('editServiceModal').style.display = 'flex';
+}
+
+// Funções auxiliares para o modal de edição
+function renderEditServiceOptions(selectedVehicle = null, selectedServiceId = null, selectedAdds = []) {
+    const vehicle = selectedVehicle || $('editVehicle').value;
+    const mainServices = DATA.services.filter(s => s.isAdd===false && (s.category === vehicle || s.category === 'both'));
+    const addServices = DATA.services.filter(s => s.isAdd===true && (s.category === vehicle || s.category === 'both'));
+    const selectService = $('editService');
+    selectService.innerHTML = mainServices.map(s => `<option value="${s.id}" data-price="${s.price}" data-time="${s.time}" ${s.id === selectedServiceId ? 'selected' : ''}>${s.name} (${money(s.price)})</option>`).join('');
+    const inputAdds = $('editAdds');
+    inputAdds.innerHTML = addServices.map(s => `<label class="small" style="display:flex;align-items:center;gap:5px;"><input type="checkbox" name="add-on" value="${s.id}" data-price="${s.price}" onchange="updateEditServiceDetails()" ${selectedAdds.includes(s.id) ? 'checked' : ''}>${s.name} (${money(s.price)})</label>`).join('');
+    // Seleciona o serviço principal após carregar as opções
+    if(selectedServiceId) { $('editService').value = selectedServiceId; }
+}
+
+function updateEditServiceDetails(forceDurationUpdate = false) {
+    const serviceId = $('editService').value;
+    const adds = Array.from(document.querySelectorAll('#editAdds input[type="checkbox"]:checked')).map(cb => cb.value);
+    const startTime = $('editTime').value;
+    const details = getServicePriceAndDuration(serviceId, adds);
+    
+    let totalTime = Number($('editTempoInput').value) || details.tempo; // Mantém o valor manual, a menos que seja forçado
+    if (!forceDurationUpdate) {
+      $('editTempoInput').value = totalTime;
+    } else {
+      totalTime = Number($('editTempoInput').value) || 0;
+    }
+
+    if (startTime && totalTime > 0) {
+        const endTime = addMinsToTime(startTime, totalTime);
+        $('editEndTime').value = `${endTime} (${totalTime} min)`;
+    } else {
+        $('editEndTime').value = `--:-- (${totalTime} min)`;
+    }
 }
 
 function closeEditModal(){ $('editServiceModal').style.display = 'none'; }
@@ -1130,7 +1175,7 @@ function printThermalNoteWrapper(schedule = null) {
     }
 }
 
-// Função para impressão térmica (Texto simples e estreito)
+// CORREÇÃO 2: Ajusta a impressão térmica para não mostrar taxas e destacar o Total.
 function printThermalNote(s){
     if (!s) return;
     const service = DATA.services.find(svc => svc.id === s.serviceId) || {name: 'Serviço', price: 0}
@@ -1153,13 +1198,7 @@ function printThermalNote(s){
     let title = isQuote ? 'ORÇAMENTO' : 'COMPROVANTE DE PAGAMENTO';
     if (isPaid) {
         paymentInfo += `FORMA PGTO: ${parsePaymentMethod(s.paymentMethod).toUpperCase()}\n`;
-        if (s.paymentMethod === 'credito' || s.paymentMethod === 'debito') {
-             const netValue = s.paidValue;
-             const fee = s.valor - netValue;
-             const feeRate = s.paymentMethod === 'credito' ? DATA.fees.credito : DATA.fees.debito;
-             paymentInfo += `TAXA (${feeRate.toFixed(2)}%): - ${money(fee)}\n`;
-             paymentInfo += `VALOR LIQ: ${money(netValue)}\n`;
-        }
+        // REMOVIDO: A parte que calculava e mostrava Taxa/Valor Líquido
         paymentInfo += `HORA PGTO: ${s.paidAt ? s.paidAt.substring(11, 16) : '--:--'}\n`;
     }
 
@@ -1184,8 +1223,15 @@ function printThermalNote(s){
                 h3 { margin: 5px 0; font-size: 11pt; text-align: center; }
                 p { margin: 2px 0; }
                 .hr { border-top: 1px dashed #333; margin: 5px 0; }
-                .total { font-size: 13pt; font-weight: bold; text-align: right; }
+                .total { 
+                    font-size: 13pt; 
+                    font-weight: bold; 
+                    text-align: right; 
+                    color: ${isPaid ? 'var(--accent)' : '#000'}; /* VERMELHO para total pago/orçado */
+                }
                 .status { font-weight: bold; text-align: center; margin-top: 5px;}
+                /* Garante que o total fique vermelho/destacado mesmo no modo de impressão */
+                .total-label { color: var(--accent); } 
             </style>
         </head>
         <body>
@@ -1203,7 +1249,7 @@ function printThermalNote(s){
             ${descontoAplicado > 0 ? `<p style="font-weight: bold; color: red;">DESCONTO (${s.discountPercent}%): - ${money(descontoAplicado)}</p>` : ''}
             <div class="hr"></div>
             ${isPaid ? `<p style="font-weight: bold;">INFO PAGAMENTO:</p><pre style="margin: 0; font-size: 8pt;">${paymentInfo}</pre><div class="hr"></div>` : ''}
-            <p class="total">TOTAL: ${money(s.valor)}</p>
+            <p class="total"><span class="total-label">TOTAL:</span> ${money(s.valor)}</p>
             <div class="hr"></div>
             <p class="status" style="color: ${isPaid ? 'green' : 'red'};">STATUS: ${isPaid ? 'PAGO' : 'PENDENTE'}</p>
             <div class="hr"></div>
@@ -1460,7 +1506,11 @@ function showDate(){
   schedulesDate.forEach((s, i) => {
     const service = DATA.services.find(svc => svc.id === s.serviceId) || {name: 'Serviço excluído'}
     const endTime = s.time ? addMinsToTime(s.time, s.tempo) : '--:--';
-    const row = tbody.insertRow(); row.insertCell().innerText = formatDateBR(s.date); row.insertCell().innerText = s.name
+    const row = tbody.insertRow(); 
+    row.insertCell().innerText = formatDateBR(s.date); 
+    /* CORREÇÃO 1: Adiciona a chamada de promptAdminPasswordForEdit ao clicar no nome do cliente */
+    row.insertCell().innerHTML = `<span class="client-name-clickable" onclick="promptAdminPasswordForEdit('${s.id}')">${s.name}</span>`
+    
     let serviceText = service.name; if (s.adds && s.adds.length>0){ const addsNames=s.adds.map(id=> (DATA.services.find(x=>x.id===id)?.name)||'Adicional'); serviceText += ' + ' + addsNames.join(' + '); }
     row.insertCell().innerText = serviceText
     const timeCell = row.insertCell(); timeCell.innerHTML = `<strong>${s.time || '--:--'}</strong> / <span style="color:var(--info)">${endTime}</span>`
@@ -1502,6 +1552,7 @@ function loadHistory(){
     const endTime = s.time ? addMinsToTime(s.time, s.tempo) : '--:--';
     const row = tbody.insertRow()
     row.insertCell().innerText = formatDateBR(s.date)
+    /* CORREÇÃO 1: Adiciona a chamada de promptAdminPasswordForEdit ao clicar no nome do cliente */
     row.insertCell().innerHTML = `<span class="client-name-clickable" onclick="promptAdminPasswordForEdit('${s.id}')">${s.name}</span>`
     let serviceText = service.name
     if (s.adds && s.adds.length > 0) {
