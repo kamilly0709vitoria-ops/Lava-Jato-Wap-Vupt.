@@ -70,7 +70,6 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
 .finance-stat-card.in { border-left-color: var(--success); } .finance-stat-card.out { border-left-color: var(--danger); } .finance-stat-card.bal { border-left-color: var(--info); }
 .finance-stat-card .label { font-size: 14px; color: var(--muted); margin-bottom: 5px; } .finance-stat-card .value { font-size: 28px; font-weight: 800; color: var(--dark); }
 .daily-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; background: #f0f4f8; border-radius: 8px; border: 1px solid var(--line); margin-bottom: 20px; }
-.daily-stat { padding: 10px; background: var(--panel); border-radius: 6px; border: 1px solid #ddd; }
 .daily-stat .label { font-size: 11px; color: var(--muted); } .daily-stat .value { font-size: 18px; font-weight: 700; margin-top: 2px; }
 
 #monthlySummaryTable tbody td:nth-child(3) { color: var(--success); font-weight: 700; }
@@ -153,7 +152,7 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
     <header class="top">  
       <div class="brand">  
         <h1 id="titleApp">Wap Vupt </h1>  
-        <div class="subtitle muted">Agendamentos • Caixa • Controle • <span id="headerNoteLabel">Nota/Orçamento</span></div>  
+        <div class="subtitle muted">Agendamentos • Caixa • Controle • <span id="headerNoteLabel">Nota<br>Orçamento</span></div>  
       </div>  
       <div class="controls">  
         <div class="small muted" id="clock">--:--</div>  
@@ -324,7 +323,7 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
     <div class="muted small" id="historyCountLabel">Lista dos agendamentos mais recentes (máx. 200).</div>  
     <div style="margin-top:15px">  
       <table>  
-        <thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Hora (Início / Saída)</th><th>Tempo</th><th>Valor</th><th>Pagto</th><th>Status</th><th>Ações</th></tr></thead>  
+        <thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Hora (Início / Saída)</th><th>Tempo</th><th>Valor</th><th>Pagto</th><th>Status</th><th>Ações</th><th>Nota</th></tr></thead>  
         <tbody id="tableHistoryBody"></tbody>  
       </table>  
     </div>
@@ -586,7 +585,7 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
             
             <div id="notePaymentInfo" style="font-size:12px; margin-bottom:10px;"></div>
             <div style="border-top:2px solid #333; padding-top:10px; text-align:right;">
-                <div style="font-size:18px; font-weight:800; color:var(--accent);">TOTAL: <span id="noteFinalValue"></span></div>
+                <div style="font-size:18px; font-weight:800; color:var(--accent);">TOTAL: <span id="noteFinalValue" style="color:var(--accent);"></span></div>
             </div>
             <p style="text-align:center; font-size:10px; color:var(--muted); margin-top:15px;">
                 Obrigado pela preferência!
@@ -646,7 +645,16 @@ function save(){ localStorage.setItem(KEY, JSON.stringify(DATA)); refreshAll() }
 /* ============================ UI HELPERS ============================ */
 function $(id){ return document.getElementById(id) }
 function money(v){ return 'R$ ' + Number(v||0).toFixed(2).replace('.',',') }
-function todayStr(){ return new Date().toISOString().slice(0,10) }
+
+// CORREÇÃO 1: Ajuste para obter a data local correta (GMT-Safe)
+function todayStr(){ 
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function parseTimeToMins(t){ if(!t) return 0; const [h,m]=t.split(':').map(Number); return h*60+m }
 function addMinsToTime(t,mins){ const total=parseTimeToMins(t)+mins; const totalMins = ((total%1440)+1440)%1440; const hh=Math.floor(totalMins/60); const mm=totalMins%60; return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}` }
 function formatDateBR(dateStr){ const [y,m,d] = dateStr.split('-'); return `${d}/${m}/${y}` }
@@ -1020,7 +1028,6 @@ function renderEditServiceOptions(selectedVehicle = null, selectedServiceId = nu
     // Seleciona o serviço principal após carregar as opções
     if(selectedServiceId) { $('editService').value = selectedServiceId; }
 }
-
 function updateEditServiceDetails(forceDurationUpdate = false) {
     const serviceId = $('editService').value;
     const adds = Array.from(document.querySelectorAll('#editAdds input[type="checkbox"]:checked')).map(cb => cb.value);
@@ -1227,7 +1234,7 @@ function printThermalNote(s){
                     font-size: 13pt; 
                     font-weight: bold; 
                     text-align: right; 
-                    color: ${isPaid ? 'var(--accent)' : '#000'}; /* VERMELHO para total pago/orçado */
+                    color: var(--accent); /* Cor Vermelha do seu tema (configurado no HTML) */
                 }
                 .status { font-weight: bold; text-align: center; margin-top: 5px;}
                 /* Garante que o total fique vermelho/destacado mesmo no modo de impressão */
@@ -1556,11 +1563,11 @@ function loadHistory(){
     row.insertCell().innerHTML = `<span class="client-name-clickable" onclick="promptAdminPasswordForEdit('${s.id}')">${s.name}</span>`
     let serviceText = service.name
     if (s.adds && s.adds.length > 0) {
-        const addsNames = s.adds.map(addId => { const addSvc = DATA.services.find(a => a.id === addId); return addSvc ? addSvc.name : 'Adicional'; });
+        const addsNames = s.adds.map(addId => { const addSvc = DATA.services.find(a => a.id === addId); return addSvc ? a.name : 'Adicional'; });
         serviceText += ' + ' + addsNames.join(' + ');
     }
     row.insertCell().innerText = serviceText
-    const timeCell = row.insertCell(); timeCell.innerHTML = `<strong>${s.time || '--:--'}</strong> / <span style="color:var(--info)">${endTime}</span>`
+    row.insertCell().innerHTML = `<strong>${s.time || '--:--'}</strong> / <span style="color:var(--info)">${endTime}</span>`
     row.insertCell().innerText = `${s.tempo} min`
     row.insertCell().innerText = money(s.valor)
     
@@ -1585,6 +1592,15 @@ function loadHistory(){
     cancelBtn.innerHTML = '<i class="fa-solid fa-times"></i>'; 
     cancelBtn.onclick = () => cancelSchedule(s.id); 
     actionCell.appendChild(cancelBtn);
+    
+    // NOVO: Adiciona a coluna e o botão de Nota/Comprovante no Histórico
+    const noteCell = row.insertCell(); 
+    noteCell.className = 'actions';
+    const noteBtn = document.createElement('button'); 
+    noteBtn.className = 'btn ghost btn-sm'; 
+    noteBtn.innerHTML = '<i class="fa-solid fa-receipt"></i> Nota'; 
+    noteBtn.onclick = () => printCustomerQuote(s); // Abre a nota com o status real (pago ou pendente/orçamento)
+    noteCell.appendChild(noteBtn);
   })
 }
 
