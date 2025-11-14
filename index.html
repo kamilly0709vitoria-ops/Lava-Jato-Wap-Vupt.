@@ -589,7 +589,10 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
                 <div style="font-size:18px; font-weight:800; color:var(--accent);">TOTAL: <span id="noteFinalValue" style="color:var(--accent);"></span></div>
             </div>
             <p style="text-align:center; font-size:10px; color:var(--muted); margin-top:15px;">
-                Obrigado pela preferência!
+                Rua João Félix em frente a creche Cria.
+                </p>
+               <p style="text-align:center; font-size:10px; color:var(--muted); margin-top:15px;"> 
+                   Obrigado pela preferência!
             </p>
         </div>
         <div style="padding:10px; background:var(--dark); border-bottom-left-radius:10px; border-bottom-right-radius:10px; text-align:center;">
@@ -1209,9 +1212,9 @@ function printThermalNote(s){
     let paymentInfo = '';
     let title = isQuote ? 'ORÇAMENTO' : 'COMPROVANTE DE PAGAMENTO';
     if (isPaid) {
-        paymentInfo += `FORMA PGTO: ${parsePaymentMethod(s.paymentMethod).toUpperCase()}\n`;
+        paymentInfo += `FORMA PAGAMENTO: ${parsePaymentMethod(s.paymentMethod).toUpperCase()}\n`;
         // REMOVIDO: A parte que calculava e mostrava Taxa/Valor Líquido
-        paymentInfo += `HORA PGTO: ${s.paidAt ? s.paidAt.substring(11, 16) : '--:--'}\n`;
+        paymentInfo += `HORA PAGAMENTO: ${s.paidAt ? s.paidAt.substring(11, 16) : '--:--'}\n`;
     }
 
     // Logo em ASCII Art simples ou URL, mas o navegador tentará renderizar o CSS/HTML
@@ -1253,8 +1256,8 @@ function printThermalNote(s){
             <p style="text-align: center; font-size: 8pt;">${title} (NÃO FISCAL)</p>
             <div class="hr"></div>
             <p>CLIENTE: ${s.name}</p>
-            <p>DATA AGEND: ${formatDateBR(s.date)} ${s.time ? `(${s.time})` : ''}</p>
-            <p>TIPO VEÍC: ${s.vehicle ? s.vehicle.toUpperCase() : 'OUTROS'}</p>
+            <p>DATA AGENDAMENTO: ${formatDateBR(s.date)} ${s.time ? `(${s.time})` : ''}</p>
+            <p>TIPO VEÍCULO: ${s.vehicle ? s.vehicle.toUpperCase() : 'OUTROS'}</p>
             <div class="hr"></div>
             <p style="font-weight: bold;">SERVIÇOS:</p>
             <pre style="margin: 0; font-size: 8pt; white-space: pre-wrap;">${items}</pre>
@@ -1265,6 +1268,8 @@ function printThermalNote(s){
             <div class="hr"></div>
             <p class="status" style="color: ${isPaid ? 'green' : 'red'};">STATUS: ${isPaid ? 'PAGO' : 'PENDENTE'}</p>
             <div class="hr"></div>
+            <p style="text-align: center; font-size: 8pt; margin-top: 10px;">${isPaid ? 'Rua João Félix em frente a creche Cria.' : 'FAÇA SEU AGENDAMENTO.'}</p>
+              <div class="hr"></div>
             <p style="text-align: center; font-size: 8pt; margin-top: 10px;">${isPaid ? 'AGRADECEMOS A PREFERÊNCIA!' : 'FAÇA SEU AGENDAMENTO.'}</p>
         </div>
         </body>
@@ -1326,7 +1331,7 @@ function printCustomerQuote(schedule, forceQuote = false) {
         </div>`);
     }
 
-    $('noteTypeLabel').innerText = isQuote ? 'ORÇAMENTO (NÃO FISCAL)' : 'COMPROVANTE DE PAGAMENTO';
+    $('noteTypeLabel').innerText = isQuote ? 'ORÇAMENTO ' : 'COMPROVANTE DE PAGAMENTO ';
     $('noteClientDetails').innerHTML = `
         <p style="margin:0;">Cliente: <strong>${schedule.name}</strong></p>
         <p style="margin:0;">Agendado: ${formatDateBR(schedule.date)} ${schedule.time ? `às ${schedule.time}` : ''} (${schedule.tempo} min)</p>
