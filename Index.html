@@ -226,6 +226,17 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
       </div>  
     </div>  
 
+    <div class="grid" style="grid-template-columns: 1fr 2fr; gap:15px; margin-top:15px;">
+        <div>
+            <label class="muted small">Veículo (Modelo/Placa)</label>
+            <input type="text" id="inputVehicleName" placeholder="Ex: Civic Preto / ABC-1234">
+        </div>
+        <div>
+            <label class="muted small">Descrição / Observações</label>
+            <input type="text" id="inputDescription" placeholder="Detalhes adicionais do serviço">
+        </div>
+    </div>
+
     <div id="pastDateWarning" class="past-date-alert" style="display:none; margin-top:15px;">  
         <i class="fa-solid fa-triangle-exclamation"></i>  
         Data anterior/passada selecionada! Registrando como **Serviço Realizado (Histórico)**.  
@@ -477,7 +488,7 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
 </div>
 
 <div id="editServiceModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
-    <div class="card" style="width:450px; padding:20px;">
+    <div class="card" style="width:500px; padding:20px; max-height:90vh; overflow-y:auto;">
         <h4 style="margin-top:0;">Editar Agendamento (Admin)</h4>
         <form id="formEditSchedule" onsubmit="saveScheduleEdit(event)">
             <input type="hidden" id="editScheduleId">
@@ -499,12 +510,28 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
 
             <div class="grid" style="grid-template-columns:1fr 1fr; gap: 15px; margin-top: 15px;">
                 <div>
+                    <label class="muted small">Nome do Veículo / Placa</label>
+                    <input type="text" id="editVehicleName" placeholder="Ex: Gol Azul / ABC1234">
+                </div>
+                <div>
                     <label class="muted small">Data</label>
                     <input type="date" id="editDate" required>
                 </div>
+            </div>
+
+            <div style="margin-top:15px;">
+                <label class="muted small">Descrição do Serviço / Notas</label>
+                <textarea id="editDescription" rows="2" placeholder="Detalhes específicos para este serviço..."></textarea>
+            </div>
+
+            <div class="grid" style="grid-template-columns:1fr 1fr; gap: 15px; margin-top: 15px;">
                 <div>
                     <label class="muted small">Hora de Início</label>
                     <input type="time" id="editTime" required onchange="updateEditServiceDetails()">
+                </div>
+                <div style="flex:1;">
+                    <label class="muted small">Duração (minutos)</label>
+                    <input type="number" id="editTempoInput" min="0" required oninput="updateEditServiceDetails(true)">
                 </div>
             </div>
 
@@ -518,20 +545,15 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
                 <div id="editAdds" style="display:flex;flex-wrap:wrap;gap:15px;border:1px solid var(--line);padding:10px;border-radius:8px;"></div>
             </div>
 
-            <div style="margin-top:15px;" class="row">
-                <div style="flex:1;">
-                    <label class="muted small">Duração (minutos)</label>
-                    <input type="number" id="editTempoInput" min="0" required oninput="updateEditServiceDetails(true)">
-                </div>
-                <div style="flex:1;">
+            <div class="grid" style="grid-template-columns:1fr 1fr; gap: 15px; margin-top: 15px;">
+                <div>
                     <label class="muted small">Previsão de Saída</label>
                     <input type="text" id="editEndTime" readonly style="background:#f9f9f9;font-weight:700;color:var(--info);">
                 </div>
-            </div>
-
-            <div style="margin-top:12px;">
-              <label class="muted small">Valor Final (Com Desconto)</label>
-              <input type="number" id="editValor" step="0.01" style="background:var(--panel);font-weight:800;color:var(--accent);">
+                <div>
+                  <label class="muted small">Valor Final (Com Desconto)</label>
+                  <input type="number" id="editValor" step="0.01" style="background:var(--panel);font-weight:800;color:var(--accent);">
+                </div>
             </div>
             
             <input type="hidden" id="editDiscount" value="0"> 
@@ -748,25 +770,6 @@ function promptAdminPasswordForHistory() {
     nav(document.querySelector('[data-view="history"]'));
 }
 
-/* CORREÇÃO 1 (Remoção de Senha): Essa função agora é chamada diretamente. O prompt de senha foi removido. */
-function editScheduleService(scheduleId) {
-    const schedule = DATA.schedules.find(s => s.id === scheduleId); if (!schedule) return;
-    $('editScheduleId').value = scheduleId;
-    
-    $('editClientNameInput').value = schedule.name;
-    $('editVehicle').value = schedule.vehicle || 'moto'; 
-    $('editDate').value = schedule.date;
-    $('editTime').value = schedule.time || '';
-    $('editValor').value = schedule.valor.toFixed(2); 
-    $('editTempoInput').value = schedule.tempo;
-    
-    $('editPaymentMethod').value = schedule.paid ? (schedule.paymentMethod || 'dinheiro') : 'pendente';
-
-    renderEditServiceOptions(schedule.vehicle, schedule.serviceId, schedule.adds || []);
-    updateEditServiceDetails(true); 
-    $('editServiceModal').style.display = 'flex';
-}
-
 /* ============================ BRAND & CLOCK ============================ */
 function renderBrand(){ 
   $('titleApp').innerText = DATA.brand.name || 'Wap Vupt'; 
@@ -888,7 +891,6 @@ function loadToday(){
     const row = tbody.insertRow()
     row.insertCell().innerText = i + 1
     
-    /* CORREÇÃO 1: REMOÇÃO DA SENHA DE EDIÇÃO RÁPIDA */
     const clientCell = row.insertCell()
     clientCell.innerHTML = `<span class="client-name-clickable" onclick="editScheduleService('${s.id}')">${s.name}</span>`
     
@@ -952,6 +954,10 @@ function saveScheduleEdit(e) {
     const wasPaid = schedule.paid;
     const nowPaid = newPaymentMethod !== 'pendente';
 
+    // Capturando os NOVOS campos
+    const newVehicleName = $('editVehicleName').value.trim();
+    const newDescription = $('editDescription').value.trim();
+
 
     if (newValor <= 0) { alert('O valor do serviço deve ser maior que zero.'); return; }
     
@@ -977,9 +983,12 @@ function saveScheduleEdit(e) {
     schedule.discountPercent = Math.round(newDiscount * 100) / 100;
     schedule.valor = newValor;
     
+    // Salvando os NOVOS campos no objeto do agendamento
+    schedule.vehicleName = newVehicleName;
+    schedule.description = newDescription;
+    
     const newPaidValue = nowPaid ? calculateValueWithFee(newValor, newPaymentMethod) : 0;
 
-    // Gerenciamento da Entrada no Caixa
     DATA.entries = DATA.entries.filter(e => e.scheduleId !== scheduleId); 
 
     if (nowPaid) {
@@ -1015,6 +1024,10 @@ function editScheduleService(scheduleId) {
     $('editTime').value = schedule.time || '';
     $('editValor').value = schedule.valor.toFixed(2); 
     $('editTempoInput').value = schedule.tempo;
+    
+    // Carregando os NOVOS campos no modal
+    $('editVehicleName').value = schedule.vehicleName || '';
+    $('editDescription').value = schedule.description || '';
     
     $('editPaymentMethod').value = schedule.paid ? (schedule.paymentMethod || 'dinheiro') : 'pendente';
 
@@ -1190,7 +1203,6 @@ function printThermalNoteWrapper(schedule = null) {
     }
 }
 
-// CORREÇÃO 2: Ajusta a impressão térmica para não mostrar taxas e destacar o Total.
 function printThermalNote(s){
     if (!s) return;
     const service = DATA.services.find(svc => svc.id === s.serviceId) || {name: 'Serviço', price: 0}
@@ -1213,7 +1225,6 @@ function printThermalNote(s){
     let title = isQuote ? 'ORÇAMENTO' : 'COMPROVANTE DE PAGAMENTO';
     if (isPaid) {
         paymentInfo += `FORMA PAGAMENTO: ${parsePaymentMethod(s.paymentMethod).toUpperCase()}\n`;
-        // REMOVIDO: A parte que calculava e mostrava Taxa/Valor Líquido
         paymentInfo += `HORA PAGAMENTO: ${s.paidAt ? s.paidAt.substring(11, 16) : '--:--'}\n`;
     }
 
@@ -1256,8 +1267,8 @@ function printThermalNote(s){
             <p style="text-align: center; font-size: 8pt;">${title} (NÃO FISCAL)</p>
             <div class="hr"></div>
             <p>CLIENTE: ${s.name}</p>
+            <p>VEÍCULO: ${s.vehicleName || 'Não informado'}</p>
             <p>DATA AGENDAMENTO: ${formatDateBR(s.date)} ${s.time ? `(${s.time})` : ''}</p>
-            <p>TIPO VEÍCULO: ${s.vehicle ? s.vehicle.toUpperCase() : 'OUTROS'}</p>
             <div class="hr"></div>
             <p style="font-weight: bold;">SERVIÇOS:</p>
             <pre style="margin: 0; font-size: 8pt; white-space: pre-wrap;">${items}</pre>
@@ -1334,6 +1345,7 @@ function printCustomerQuote(schedule, forceQuote = false) {
     $('noteTypeLabel').innerText = isQuote ? 'ORÇAMENTO ' : 'COMPROVANTE DE PAGAMENTO ';
     $('noteClientDetails').innerHTML = `
         <p style="margin:0;">Cliente: <strong>${schedule.name}</strong></p>
+        <p style="margin:0;">Veículo: <strong>${schedule.vehicleName || '--'}</strong></p>
         <p style="margin:0;">Agendado: ${formatDateBR(schedule.date)} ${schedule.time ? `às ${schedule.time}` : ''} (${schedule.tempo} min)</p>
         <p style="margin:0; font-weight:700; color:var(--info);">Total Base: ${money(baseValor)}</p>
     `;
@@ -1470,7 +1482,11 @@ function createSchedule(e){
   const finalValue = Number($('inputTotalWithDiscount').value) || 0; 
   const markPaid = $('inputMarkPaid').checked;
   const paymentMethod = markPaid ? $('inputPaymentMethod').value : null;
-  const paidValue = markPaid ? Number($('inputPaidValueWithFee').value) : 0; // Usando o valor líquido
+  const paidValue = markPaid ? Number($('inputPaidValueWithFee').value) : 0; 
+
+  // Novos campos do Registro
+  const vehicleName = $('inputVehicleName').value.trim();
+  const description = $('inputDescription').value.trim();
 
   if(!serviceId){ alert('Selecione um serviço principal.'); return }
   if(finalValue <= 0){ alert('O valor final deve ser maior que zero.'); return }
@@ -1493,7 +1509,10 @@ function createSchedule(e){
     paymentMethod: paymentMethod, 
     paidValue: paidValue,       
     paidAt: markPaid ? new Date().toISOString() : null, 
-    createdAt: new Date().toISOString() 
+    createdAt: new Date().toISOString(),
+    // Salvando no objeto
+    vehicleName: vehicleName,
+    description: description
   }
   
   DATA.schedules.push(newSchedule); 
@@ -1525,7 +1544,6 @@ function showDate(){
     const endTime = s.time ? addMinsToTime(s.time, s.tempo) : '--:--';
     const row = tbody.insertRow(); 
     row.insertCell().innerText = formatDateBR(s.date); 
-    /* CORREÇÃO 1: REMOÇÃO DA SENHA DE EDIÇÃO RÁPIDA */
     row.insertCell().innerHTML = `<span class="client-name-clickable" onclick="editScheduleService('${s.id}')">${s.name}</span>`
     
     let serviceText = service.name; if (s.adds && s.adds.length>0){ const addsNames=s.adds.map(id=> (DATA.services.find(x=>x.id===id)?.name)||'Adicional'); serviceText += ' + ' + addsNames.join(' + '); }
@@ -1569,7 +1587,6 @@ function loadHistory(){
     const endTime = s.time ? addMinsToTime(s.time, s.tempo) : '--:--';
     const row = tbody.insertRow()
     row.insertCell().innerText = formatDateBR(s.date)
-    /* CORREÇÃO 1: REMOÇÃO DA SENHA DE EDIÇÃO RÁPIDA */
     row.insertCell().innerHTML = `<span class="client-name-clickable" onclick="editScheduleService('${s.id}')">${s.name}</span>`
     let serviceText = service.name
     if (s.adds && s.adds.length > 0) {
@@ -1603,13 +1620,12 @@ function loadHistory(){
     cancelBtn.onclick = () => cancelSchedule(s.id); 
     actionCell.appendChild(cancelBtn);
     
-    // NOVO: Adiciona a coluna e o botão de Nota/Comprovante no Histórico
     const noteCell = row.insertCell(); 
     noteCell.className = 'actions';
     const noteBtn = document.createElement('button'); 
     noteBtn.className = 'btn ghost btn-sm'; 
     noteBtn.innerHTML = '<i class="fa-solid fa-receipt"></i> Nota'; 
-    noteBtn.onclick = () => printCustomerQuote(s); // Abre a nota com o status real (pago ou pendente/orçamento)
+    noteBtn.onclick = () => printCustomerQuote(s); 
     noteCell.appendChild(noteBtn);
   })
 }
@@ -1715,7 +1731,6 @@ function renderFullExpenseHistory() {
 }
 
 function openExpenseHistoryModal() { 
-    // Não precisa de senha, pois já está no Admin
     renderFullExpenseHistory();
     $('expenseHistoryModal').style.display = 'flex'; 
 }
@@ -1733,7 +1748,7 @@ function enableExpenseEdit(id, row, descCell, valueCell) {
     saveBtn.onclick = () => saveExpenseEdit(id, descInput.value, valueInput.value); actionCell.appendChild(saveBtn);
     const cancelBtn = document.createElement('button'); cancelBtn.className = 'btn ghost btn-sm'; cancelBtn.innerHTML = '<i class="fa-solid fa-times"></i>'; 
     cancelBtn.onclick = () => renderFullExpenseHistory(); actionCell.appendChild(cancelBtn);
-    input.focus();
+    descInput.focus();
 }
 function saveExpenseEdit(id, newDesc, newValue) {
     const expense = DATA.expenses.find(exp => exp.id === id); if (!expense) return;
