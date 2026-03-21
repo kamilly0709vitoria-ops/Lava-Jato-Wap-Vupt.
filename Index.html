@@ -51,6 +51,8 @@ th{font-size:13px;color:var(--dark);background:var(--line);font-weight:700;text-
 tr:last-child td{border-bottom:none}
 .paid{color:var(--success);font-weight:700}
 .not-paid{color:var(--danger);font-weight:700}
+.delivered { color: #1565c0; font-weight: 700; font-size: 11px; text-transform: uppercase; }
+.not-delivered { color: #6c757d; font-weight: 400; font-size: 11px; text-transform: uppercase; }
 
 input[type=text], input[type=time], input[type=date], input[type=number], select, textarea{
 width:100%;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);font-size:14px;transition:border-color 0.2s
@@ -61,7 +63,7 @@ button.btn:hover{background:#9e0000}
 button.ghost{background:transparent;border:1px solid var(--line);color:var(--dark);padding:10px 18px;border-radius:8px;transition:all 0.2s}
 button.ghost:hover{background:var(--line)}
 .btn-sm { padding: 6px 10px; font-size: 12px; }
-.actions{display:flex;gap:10px}
+.actions{display:flex;flex-direction:column;gap:5px}
 .controls{display:flex;gap:10px;align-items:center}
 footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
 
@@ -185,7 +187,7 @@ footer{margin-top:20px;color:var(--muted);font-size:12px;text-align:center}
 
   <div style="margin-top:15px">  
     <table id="tableToday">  
-      <thead><tr><th>#</th><th>Cliente</th><th>Serviço</th><th>Hora (Início / Saída)</th><th>Valor</th><th>Status</th><th>Ações</th><th>Nota</th></tr></thead>  
+      <thead><tr><th>#</th><th>Cliente</th><th>Serviço</th><th>Hora (Início / Saída)</th><th>Valor</th><th>Status</th><th>Ações</th><th>Orçamento</th></tr></thead>  
       <tbody></tbody>  
     </table>  
   </div>  
@@ -877,6 +879,13 @@ function refreshAll(){
 }
 
 /* ============================ TODAY VIEW (SCHEDULES) ============================ */
+function toggleDelivered(id) {
+    const s = DATA.schedules.find(x => x.id === id);
+    if (!s) return;
+    s.delivered = !s.delivered;
+    save();
+}
+
 function loadToday(){
   const today = todayStr()
   const schedulesToday = DATA.schedules.filter(s => s.date === today).sort((a,b) => a.time.localeCompare(b.time))
@@ -911,25 +920,40 @@ function loadToday(){
     const timeCell = row.insertCell(); timeCell.innerHTML = `<strong>${s.time || '--:--'}</strong> / <span style="color:var(--info)">${endTime}</span>`
     row.insertCell().innerHTML = `<strong>${displayValor}</strong>`
     
-    let statusText = s.paid ? 'Pago' : 'Pendente';
-    if (s.paid && s.paymentMethod) {
-        statusText += ` (${s.paymentMethod.substring(0, 1).toUpperCase()})`; 
+    // STATUS (PAGAMENTO + ENTREGA)
+    let statusHTML = '';
+    if (s.paid) {
+        statusHTML += `<div class="paid">Pago (${s.paymentMethod.substring(0,1).toUpperCase()})</div>`;
+    } else {
+        statusHTML += `<div class="not-paid">Pendente</div>`;
     }
-    const statusCell = row.insertCell(); statusCell.className = s.paid ? 'paid' : 'not-paid'; statusCell.innerText = statusText
+    statusHTML += s.delivered ? `<div class="delivered"><i class="fa-solid fa-check-double"></i> Entregue</div>` : `<div class="not-delivered">Não Entregue</div>`;
+    row.insertCell().innerHTML = statusHTML;
+
+    // AÇÕES
     const actionCell = row.insertCell(); actionCell.className = 'actions'
     
     if(!s.paid){
       const payBtn = document.createElement('button'); payBtn.className = 'btn btn-sm'; payBtn.innerHTML = '<i class="fa-solid fa-hand-holding-dollar"></i> Pagar'; payBtn.onclick = () => confirmPayment(s.id); actionCell.appendChild(payBtn)
-    } else {
-      const printBtn = document.createElement('button'); printBtn.className = 'btn ghost btn-sm'; printBtn.innerHTML = '<i class="fa-solid fa-receipt"></i> Nota'; printBtn.onclick = () => printCustomerQuote(s); actionCell.appendChild(printBtn)
     }
-    const cancelBtn = document.createElement('button'); cancelBtn.className = 'btn ghost btn-sm'; cancelBtn.style.color = 'var(--danger)'; cancelBtn.style.borderColor = 'var(--danger)'; cancelBtn.innerHTML = '<i class="fa-solid fa-times"></i>'; cancelBtn.onclick = () => cancelSchedule(s.id); actionCell.appendChild(cancelBtn)
+
+    // BOTÃO ENTREGUE
+    const deliveryBtn = document.createElement('button'); 
+    deliveryBtn.className = s.delivered ? 'btn ghost btn-sm' : 'btn btn-sm';
+    deliveryBtn.style.backgroundColor = s.delivered ? '' : '#1565c0';
+    deliveryBtn.style.color = s.delivered ? '' : '#fff';
+    deliveryBtn.innerHTML = s.delivered ? '<i class="fa-solid fa-undo"></i> Desfazer Ent.' : '<i class="fa-solid fa-car-side"></i> Entregue'; 
+    deliveryBtn.onclick = () => toggleDelivered(s.id); 
+    actionCell.appendChild(deliveryBtn);
+
+    const cancelBtn = document.createElement('button'); cancelBtn.className = 'btn ghost btn-sm'; cancelBtn.style.color = 'var(--danger)'; cancelBtn.style.borderColor = 'var(--danger)'; cancelBtn.innerHTML = '<i class="fa-solid fa-times"></i> Cancelar'; cancelBtn.onclick = () => cancelSchedule(s.id); actionCell.appendChild(cancelBtn)
     
+    // COLUNA ORÇAMENTO
     const noteCell = row.insertCell(); noteCell.className = 'actions';
     const noteBtn = document.createElement('button'); 
     noteBtn.className = 'btn ghost btn-sm'; 
     noteBtn.innerHTML = '<i class="fa-solid fa-file-invoice-dollar"></i> Orçamento'; 
-    noteBtn.onclick = () => printCustomerQuote(s, true); // True para forçar Orçamento
+    noteBtn.onclick = () => printCustomerQuote(s, true); 
     noteCell.appendChild(noteBtn)
   })
 }
@@ -1512,7 +1536,8 @@ function createSchedule(e){
     createdAt: new Date().toISOString(),
     // Salvando no objeto
     vehicleName: vehicleName,
-    description: description
+    description: description,
+    delivered: false
   }
   
   DATA.schedules.push(newSchedule); 
