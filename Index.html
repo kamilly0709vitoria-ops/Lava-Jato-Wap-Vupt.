@@ -916,7 +916,16 @@ function loadToday(){
     if (s.discountPercent && Number(s.discountPercent) > 0) {
         displayValor = `${money(s.valor)} <span style="font-size:10px;color:var(--muted)">(${s.discountPercent}% off)</span>`;
     }
-    row.insertCell().innerHTML = serviceText
+    const serviceCell = row.insertCell();
+serviceCell.innerHTML = `
+    <strong>${serviceText}</strong>
+    ${s.description ? `
+        <div style="font-size: 11px; color: #666; margin-top: 4px; border-left: 2px solid #007bff; padding-left: 5px; line-height: 1.2;">
+            <strong style="color: #333;">Obs:</strong> ${s.description}
+        </div>
+    ` : ''}
+`;
+
     const timeCell = row.insertCell(); timeCell.innerHTML = `<strong>${s.time || '--:--'}</strong> / <span style="color:var(--info)">${endTime}</span>`
     row.insertCell().innerHTML = `<strong>${displayValor}</strong>`
     
@@ -1016,7 +1025,8 @@ function saveScheduleEdit(e) {
     DATA.entries = DATA.entries.filter(e => e.scheduleId !== scheduleId); 
 
     if (nowPaid) {
-        const paymentDateISO = schedule.paidAt || new Date().toISOString();
+        const paymentDateISO = schedule.paidAt || new Date(new Date().getTime() - (3 * 60 * 60 * 1000)).toISOString();
+
         schedule.paid = true;
         schedule.paymentMethod = newPaymentMethod;
         schedule.paidValue = newPaidValue;
@@ -1121,7 +1131,8 @@ function confirmPayment(scheduleId){
     schedule.paid = true;
     schedule.paymentMethod = paymentMethod; 
     schedule.paidValue = netValue; 
-    schedule.paidAt = new Date().toISOString();
+    schedule.paidAt = new Date(new Date().getTime() - (3 * 60 * 60 * 1000)).toISOString();
+
 
     DATA.entries.push({ id: idGen(), label: `Agendamento - ${schedule.name} (${formatDateBR(schedule.date)}) [${paymentMethod.toUpperCase()}]`, value: schedule.paidValue, time: schedule.paidAt, scheduleId: scheduleId })
     save()
